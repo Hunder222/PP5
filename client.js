@@ -1,12 +1,19 @@
-const testField = document.querySelector("#testField")
+// client.js
 
+const testField = document.querySelector("#testField");
+// console.log(EKdataset[0]); // Optional: keep for debugging
 
+const query = {
+    "Køn": "Mand"
+};
 
-console.log(EKdataset[0]);
+// --- THIS IS THE CRITICAL CHANGE ---
+// Access the actual function from the '.default' property of the global object.
+const filteredData = EKdataset.filter(sift.default(query)); 
 
-for (const element of EKdataset) {
-    let newLi = document.createElement("li")
-    newLi.textContent = element.Alder
-    testField.appendChild(newLi)
+// ... rest of the code is fine
+for (const element of filteredData) {
+    let newLi = document.createElement("li");
+    newLi.textContent = element.Køn;
+    testField.appendChild(newLi);
 }
-
