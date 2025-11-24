@@ -1,19 +1,34 @@
-// client.js
 
 const testField = document.querySelector("#testField");
-// console.log(EKdataset[0]); // Optional: keep for debugging
+console.log(EKdataset[0]);
+
+// clean dataset
+for (const element of EKdataset) {
+    let kvotient = element.KVOTIENT
+    if (kvotient){
+        if (typeof(kvotient)==="string") {
+            kvotient = kvotient.replace(',', '.')
+            kvotient = parseFloat(kvotient)
+            element.KVOTIENT = kvotient
+        }
+        
+    }
+}
+
 
 const query = {
     "Køn": "Mand"
 };
 
-// --- THIS IS THE CRITICAL CHANGE ---
-// Access the actual function from the '.default' property of the global object.
+
 const filteredData = EKdataset.filter(sift.default(query)); 
 
-// ... rest of the code is fine
 for (const element of filteredData) {
     let newLi = document.createElement("li");
-    newLi.textContent = element.Køn;
+    newLi.textContent = element.KVOTIENT;
     testField.appendChild(newLi);
 }
+
+
+
+
