@@ -38812,7 +38812,7 @@ const EKdataset = [
         "BETEGNELSE_A911": "ENMA",
         "OPTAG": "2022E",
         "EKSAMENSTYPE_NAVN": "Andet adgangsgrundlag",
-        "KVOTIENT": "9,3",
+        "KVOTIENT": 9.3,
         "EKS_LAND_NAVN": "Ukendt",
         "Søgt som prioritet 1": "J",
         "Alder": 22,
