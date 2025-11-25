@@ -235,6 +235,27 @@ function getMunicipalityNames(dataset) {
 //////// END__LEAFLET ////////
 //////// START__QUERIES ////////
 
+//////// Avg kvotient ////////
+function getAvgQuota() {
+    const pipeline2 = [
+        {
+            $group: {
+                _id: null,
+                AVGKVOTIENT2: {$avg: "$KVOTIENT"}
+            }
+        }
+    ]
+    const queryResult2 = new mingo.Aggregator(pipeline2).run(EKdataset);
+
+    const result = queryResult2[0].AVGKVOTIENT2.toFixed(2)
+
+    console.log(result);
+    //logs 6.42
+}
+
+getAvgQuota()
+
+//////// Avg kvotient m. køn ////////
 function getQuotaGender(gender) {
     const pipeline = [
         {
@@ -257,28 +278,9 @@ function getQuotaGender(gender) {
     // logs("Mand"): 6.11
     // logs("Kvinde"): 6.83
 }
-
 getQuotaGender("Kvinde")
 
-function getAvgQuota() {
-    const pipeline2 = [
-        {
-            $group: {
-                _id: null,
-                AVGKVOTIENT2: {$avg: "$KVOTIENT"}
-            }
-        }
-    ]
-    const queryResult2 = new mingo.Aggregator(pipeline2).run(EKdataset);
-
-    const result = queryResult2[0].AVGKVOTIENT2.toFixed(2)
-
-    console.log(result);
-    //logs 6.42
-}
-
-getAvgQuota()
-
+//////// Avg kvotient m. uddannelse ////////
 function getQuotaEducation(education) {
     const pipeline3 = [
         {
@@ -296,10 +298,12 @@ function getQuotaEducation(education) {
     const result = queryresult3[0].AVGKVOTIENT3.toFixed(2)
 
     console.log(result)
+
 }
 
 getQuotaEducation("Bygningskonstruktør");
 
+//////// Avg kvotient m. køn og uddannelse ////////
 function getQuotaEducationGender(gender, education) {
     const pipeline4 = [
         {
@@ -316,11 +320,98 @@ function getQuotaEducationGender(gender, education) {
         }
     ]
     const queryresult4 = new mingo.Aggregator(pipeline4).run(EKdataset);
+
     const result = queryresult4[0].AVGKVOTIENT4.toFixed(2)
+
     console.log(result)
 }
 getQuotaEducationGender("Mand", "Bygningskonstruktør")
 
+//////// Avg alder ////////
+function getAvgAge() {
+    const pipeline5 = [
+        {
+            $group: {
+                _id: null,
+                AVGAGE: {$avg: "$Alder"}
+            }
+        }
+    ]
+    const queryresult5 = new mingo.Aggregator(pipeline5).run(EKdataset);
+
+    const result = queryresult5[0].AVGAGE.toFixed();
+
+    console.log(result)
+    // logs("Alder"): 26
+}
+getAvgAge()
+
+//////// Avg alder m. køn ////////
+function getAvgAgeGender(gender){
+    const pipeline6 = [
+        {
+            $match: {"Køn": gender}
+        },
+        {
+            $group: {
+                _id: null,
+                AVGAGE2: {$avg: "$Alder"}
+            }
+        }
+    ]
+    const queryresult6 = new mingo.Aggregator(pipeline6).run(EKdataset);
+
+    const result = queryresult6[0].AVGAGE2.toFixed()
+
+    console.log(result)
+    //logs (Kvinde): 25
+    //log (Mand): 27
+}
+getAvgAgeGender("Mand")
+
+//////// Avg alder m. uddannelse ////////
+function getAvgAgeEducation(education) {
+    const pipeline7 = [
+        {
+            $match: {"INSTITUTIONSAKT_BETEGNELSE": education}
+        },
+        {
+            $group: {
+                _id: null,
+                AVGAGE3: {$avg: "$Alder"}
+            }
+        }
+    ]
+    const queryresult7 = new mingo.Aggregator(pipeline7).run(EKdataset);
+
+    const result = queryresult7[0].AVGAGE3.toFixed();
+
+    console.log(result)
+}
+getAvgAgeEducation("PB i IT-arkitektur")
+
+//////// Avg alder m. køn og uddannelse ////////
+function getAvgAgeGenderEducation(gender, education){
+    const pipeline8 = [
+        {
+            $match: {"Køn": gender,
+            "INSTITUTIONSAKT_BETEGNELSE": education
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                AVGAGE4: {$avg: "$Alder"}
+            }
+        }
+    ]
+    const queryresult8 = new mingo.Aggregator(pipeline8).run(EKdataset);
+
+    const result = queryresult8[0].AVGAGE4.toFixed();
+
+    console.log(result)
+}
+getAvgAgeGenderEducation("Kvinde", "PB i IT-arkitektur");
 
 //////// END__QUERIES ////////
 //////// START__EVENTLISTENERS ////////
