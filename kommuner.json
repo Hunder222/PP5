@@ -6,7 +6,7 @@
     ]
   },
   {
-    "Kommune": "Aarhus",
+    "Kommune": "Århus",
     "Byer": [
       "Højbjerg",
       "Mundelstrup",
@@ -389,14 +389,14 @@
     "Kommune": "Udland",
     "Byer": [
       "212 38 Malmø",
+      "Argir",
       "Asker",
       "Carrickfergus",
       "Erdal",
+      "Falsterbo",
       "Göteborg",
       "Helsingborg",
-      "Malmø",
-      "Malmø",
-      "Malmø",
+      "Kaldbak",
       "Malmø",
       "Mägenwil",
       "Nuuk",
@@ -404,21 +404,10 @@
       "Oslo",
       "Reykjavik",
       "Trelleborg",
+      "Ukendt",
       "Umeå",
       "Utansjö",
-      "Falsterbo",
-      "Malmø",
-      "Malmø",
-      "Oslo",
       "Ås"
-    ]
-  },
-  {
-    "Kommune": "Ukendt Kommune",
-    "Byer": [
-      "Argir",
-      "Kaldbak",
-      "Ukendt"
     ]
   },
   {

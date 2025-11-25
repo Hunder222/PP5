@@ -38819,3 +38819,443 @@ const EKdataset = [
         "Adgangsgivende skole navn": "Ukendt"
 
     }]
+
+const kommuneDataset = [
+    {
+        "Kommune": "Aalborg",
+        "Byer": [
+            "Aalborg"
+        ]
+    },
+    {
+        "Kommune": "Århus",
+        "Byer": [
+            "Højbjerg",
+            "Mundelstrup",
+            "Tranbjerg J",
+            "Viby J",
+            "Århus C",
+            "Århus N"
+        ]
+    },
+    {
+        "Kommune": "Albertslund",
+        "Byer": [
+            "Albertslund"
+        ]
+    },
+    {
+        "Kommune": "Allerød",
+        "Byer": [
+            "Allerød"
+        ]
+    },
+    {
+        "Kommune": "Ballerup",
+        "Byer": [
+            "Ballerup",
+            "Måløv",
+            "Skovlunde"
+        ]
+    },
+    {
+        "Kommune": "Bornholm",
+        "Byer": [
+            "Gudhjem",
+            "Neksø"
+        ]
+    },
+    {
+        "Kommune": "Brøndby",
+        "Byer": [
+            "Brøndby",
+            "Brøndby Strand"
+        ]
+    },
+    {
+        "Kommune": "Dragør",
+        "Byer": [
+            "Dragør"
+        ]
+    },
+    {
+        "Kommune": "Egedal",
+        "Byer": [
+            "Smørum",
+            "Stenløse",
+            "Veksø Sjælland",
+            "Ølstykke"
+        ]
+    },
+    {
+        "Kommune": "Esbjerg",
+        "Byer": [
+            "Esbjerg"
+        ]
+    },
+    {
+        "Kommune": "Faxe",
+        "Byer": [
+            "Rønnede"
+        ]
+    },
+    {
+        "Kommune": "Fredensborg",
+        "Byer": [
+            "Fredensborg",
+            "Kokkedal",
+            "Nivå"
+        ]
+    },
+    {
+        "Kommune": "Frederiksberg",
+        "Byer": [
+            "Frederiksberg",
+            "Frederiksberg C"
+        ]
+    },
+    {
+        "Kommune": "Frederikssund",
+        "Byer": [
+            "Frederikssund",
+            "Jægerspris",
+            "Slangerup"
+        ]
+    },
+    {
+        "Kommune": "Furesø",
+        "Byer": [
+            "Farum",
+            "Værløse"
+        ]
+    },
+    {
+        "Kommune": "Gentofte",
+        "Byer": [
+            "Charlottenlund",
+            "Dyssegård ",
+            "Gentofte",
+            "Hellerup"
+        ]
+    },
+    {
+        "Kommune": "Gladsaxe",
+        "Byer": [
+            "Bagsværd",
+            "Søborg"
+        ]
+    },
+    {
+        "Kommune": "Glostrup",
+        "Byer": [
+            "Glostrup"
+        ]
+    },
+    {
+        "Kommune": "Greve",
+        "Byer": [
+            "Greve",
+            "Karlslunde"
+        ]
+    },
+    {
+        "Kommune": "Gribskov",
+        "Byer": [
+            "Gilleleje",
+            "Helsinge",
+            "Tisvildeleje",
+            "Vejby"
+        ]
+    },
+    {
+        "Kommune": "Guldborgsund",
+        "Byer": [
+            "Nykøbing F"
+        ]
+    },
+    {
+        "Kommune": "Halsnæs",
+        "Byer": [
+            "Frederiksværk",
+            "Melby",
+            "Ølsted"
+        ]
+    },
+    {
+        "Kommune": "Helsingør",
+        "Byer": [
+            "Espergærde",
+            "Helsingør",
+            "Hornbæk",
+            "Ålsgårde"
+        ]
+    },
+    {
+        "Kommune": "Herlev",
+        "Byer": [
+            "Herlev"
+        ]
+    },
+    {
+        "Kommune": "Hillerød",
+        "Byer": [
+            "Hillerød",
+            "Skævinge"
+        ]
+    },
+    {
+        "Kommune": "Holbæk",
+        "Byer": [
+            "Gislinge",
+            "Holbæk",
+            "Kirke Eskilstrup",
+            "Mørkøv",
+            "Regstrup",
+            "Store Merløse",
+            "Tølløse"
+        ]
+    },
+    {
+        "Kommune": "Holstebro",
+        "Byer": [
+            "Holstebro"
+        ]
+    },
+    {
+        "Kommune": "Horsens",
+        "Byer": [
+            "Horsens"
+        ]
+    },
+    {
+        "Kommune": "Hvidovre",
+        "Byer": [
+            "Hvidovre"
+        ]
+    },
+    {
+        "Kommune": "Høje-Taastrup",
+        "Byer": [
+            "Hedehusene",
+            "Taastrup"
+        ]
+    },
+    {
+        "Kommune": "Hørsholm",
+        "Byer": [
+            "Hørsholm"
+        ]
+    },
+    {
+        "Kommune": "Ishøj",
+        "Byer": [
+            "Ishøj"
+        ]
+    },
+    {
+        "Kommune": "Kalundborg",
+        "Byer": [
+            "Kalundborg"
+        ]
+    },
+    {
+        "Kommune": "Kolding",
+        "Byer": [
+            "Kolding"
+        ]
+    },
+    {
+        "Kommune": "København",
+        "Byer": [
+            "Brønshøj",
+            "København K",
+            "København N",
+            "København NV",
+            "København S",
+            "København SV",
+            "København V",
+            "København Ø",
+            "Nordhavn",
+            "Valby",
+            "Vanløse"
+        ]
+    },
+    {
+        "Kommune": "Køge",
+        "Byer": [
+            "Borup",
+            "Herfølge",
+            "Køge",
+            "Lille Skensved"
+        ]
+    },
+    {
+        "Kommune": "Lejre",
+        "Byer": [
+            "Lejre"
+        ]
+    },
+    {
+        "Kommune": "Lyngby-Taarbæk",
+        "Byer": [
+            "Lyngby",
+            "Virum"
+        ]
+    },
+    {
+        "Kommune": "Næstved",
+        "Byer": [
+            "Holme-Olstrup",
+            "Karrebæksminde",
+            "Næstved"
+        ]
+    },
+    {
+        "Kommune": "Odense",
+        "Byer": [
+            "Odense C",
+            "Odense NØ",
+            "Odense S",
+            "Odense V"
+        ]
+    },
+    {
+        "Kommune": "Odsherred",
+        "Byer": [
+            "Fårevejle",
+            "Vig"
+        ]
+    },
+    {
+        "Kommune": "Ringkøbing-Skjern",
+        "Byer": [
+            "Lem St"
+        ]
+    },
+    {
+        "Kommune": "Ringsted",
+        "Byer": [
+            "Ringsted"
+        ]
+    },
+    {
+        "Kommune": "Roskilde",
+        "Byer": [
+            "Jyllinge",
+            "Roskilde",
+            "Viby Sjælland"
+        ]
+    },
+    {
+        "Kommune": "Rudersdal",
+        "Byer": [
+            "Birkerød",
+            "Holte",
+            "Nærum",
+            "Vedbæk"
+        ]
+    },
+    {
+        "Kommune": "Rødovre",
+        "Byer": [
+            "Rødovre"
+        ]
+    },
+    {
+        "Kommune": "Silkeborg",
+        "Byer": [
+            "Silkeborg"
+        ]
+    },
+    {
+        "Kommune": "Slagelse",
+        "Byer": [
+            "Korsør",
+            "Slagelse",
+            "Vemmelev"
+        ]
+    },
+    {
+        "Kommune": "Solrød",
+        "Byer": [
+            "Solrød Strand"
+        ]
+    },
+    {
+        "Kommune": "Sorø",
+        "Byer": [
+            "Ruds Vedby",
+            "Sorø"
+        ]
+    },
+    {
+        "Kommune": "Stevns",
+        "Byer": [
+            "Hårlev"
+        ]
+    },
+    {
+        "Kommune": "Svendborg",
+        "Byer": [
+            "Skårup Fyn",
+            "Svendborg"
+        ]
+    },
+    {
+        "Kommune": "Tårnby",
+        "Byer": [
+            "Kastrup"
+        ]
+    },
+    {
+        "Kommune": "Udland",
+        "Byer": [
+            "Argir",
+            "Asker",
+            "Carrickfergus",
+            "Erdal",
+            "Falsterbo",
+            "Göteborg",
+            "Helsingborg",
+            "Kaldbak",
+            "Malmø",
+            "Mägenwil",
+            "Nuuk",
+            "Nøtterøy",
+            "Oslo",
+            "Reykjavik",
+            "Trelleborg",
+            "Ukendt",
+            "Umeå",
+            "Utansjö",
+            "Ås"
+        ]
+    },
+    {
+        "Kommune": "Vallensbæk",
+        "Byer": [
+            "Vallensbæk",
+            "Vallensbæk Strand"
+        ]
+    },
+    {
+        "Kommune": "Varde",
+        "Byer": [
+            "Varde"
+        ]
+    },
+    {
+        "Kommune": "Vejle",
+        "Byer": [
+            "Give"
+        ]
+    },
+    {
+        "Kommune": "Vordingborg",
+        "Byer": [
+            "Langebæk",
+            "Præstø",
+            "Vordingborg"
+        ]
+    }
+]
