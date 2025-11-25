@@ -2,29 +2,14 @@
 const testField = document.querySelector("#testField");
 
 
-
-
-
-
 console.log(EKdataset[0]);
 
 
 //////// START__CHARTJS ////////
 
 
-
-
-
-
-
-
-
-
-
-
 //////// END__CHARTJS ////////
 //////// START___LEAFLET ////////
-
 
 
 // map init and propertiees
@@ -124,7 +109,7 @@ function calculateMunicipalityStats(userEntries, municipalityMappingJson) {
         }
     }
 
-    return { counts, maxCount };
+    return {counts, maxCount};
 }
 
 
@@ -145,100 +130,89 @@ function getHeatmapColor(count, max) {
 }
 
 
-
-
 function mapMunicipalitiesFromDataset(datasetToVisualize) {
     // Fetch ALL necessary data
     fetch('https://raw.githubusercontent.com/magnuslarsen/geoJSON-Danish-municipalities/master/municipalities/municipalities.geojson')
-    .then(r => r.json())
-    .then(geoJsonData => {
-    
-        console.log("GeoJSON loaded. Processing stats...");
-    
-        // 4. Calculate Stats using the helper function above
-        const { counts } = calculateMunicipalityStats(datasetToVisualize, kommuneDataset);
-    
-        // Recalculate Max Count EXCLUDING "København" AND "Frederiksberg"
-        let adjustedMaxCount = 0;
-        Object.entries(counts).forEach(([name, count]) => {
-            if (name !== 'København' && name !== 'Frederiksberg') {
-                if (count > adjustedMaxCount) adjustedMaxCount = count;
-            }
-        });
-    
-        console.log("Max applications (excluding top 2):", adjustedMaxCount);
-    
-        // 5. Define Style Function (using the calculated counts)
-        function heatmapStyle(feature) {
-            // Get the name from the GeoJSON property
-            const muniName = feature.properties.label_dk;
-    
-            // Get the count we calculated (default to 0 if not found)
-            const count = counts[muniName] || 0;
-    
-            // Data color scheme outliers
-            if (muniName === 'København') {
-                return {
-                    fillColor: '#4B0082', 
-                    weight: 1,
-                    opacity: 1,
-                    color: 'white',
-                    dashArray: '3',
-                    fillOpacity: 0.6
-                };
-            } else if (muniName === 'Frederiksberg'){
-                return {
-                    fillColor: '#4B0082', 
-                    weight: 1,
-                    opacity: 1,
-                    color: 'white',
-                    dashArray: '3',
-                    fillOpacity: 0.4
-                };
-            }
-    
-            return {
-                fillColor: getHeatmapColor(count, adjustedMaxCount), 
-                weight: 1,
-                opacity: 1,
-                color: 'white',   
-                dashArray: '3',
-                fillOpacity: 0.8  
-            };
-        }
-    
-        // 6. Add GeoJSON layer to map
-        L.geoJSON(geoJsonData, {
-            style: heatmapStyle,
-            onEachFeature: function (feature, layer) {
-                const muniName = feature.properties.label_dk;
-                const count = counts[muniName] || 0;
-    
-                // Add a popup with the municipality name and count
-                layer.bindPopup(`<strong>${muniName}</strong><br>Entries: ${count}`);
-            }
-        }).addTo(map);
-    
-        // 7 called last to draw schools on top of municipality zones
-        mapEkSchools()
-    })
-    .catch(err => {
-        console.error("Error loading GeoJSON:", err);
-    });
-}
+        .then(r => r.json())
+        .then(geoJsonData => {
 
+            console.log("GeoJSON loaded. Processing stats...");
+
+            // 4. Calculate Stats using the helper function above
+            const {counts} = calculateMunicipalityStats(datasetToVisualize, kommuneDataset);
+
+            // Recalculate Max Count EXCLUDING "København" AND "Frederiksberg"
+            let adjustedMaxCount = 0;
+            Object.entries(counts).forEach(([name, count]) => {
+                if (name !== 'København' && name !== 'Frederiksberg') {
+                    if (count > adjustedMaxCount) adjustedMaxCount = count;
+                }
+            });
+
+            console.log("Max applications (excluding top 2):", adjustedMaxCount);
+
+            // 5. Define Style Function (using the calculated counts)
+            function heatmapStyle(feature) {
+                // Get the name from the GeoJSON property
+                const muniName = feature.properties.label_dk;
+
+                // Get the count we calculated (default to 0 if not found)
+                const count = counts[muniName] || 0;
+
+                // Data color scheme outliers
+                if (muniName === 'København') {
+                    return {
+                        fillColor: '#4B0082',
+                        weight: 1,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.6
+                    };
+                } else if (muniName === 'Frederiksberg') {
+                    return {
+                        fillColor: '#4B0082',
+                        weight: 1,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.4
+                    };
+                }
+
+                return {
+                    fillColor: getHeatmapColor(count, adjustedMaxCount),
+                    weight: 1,
+                    opacity: 1,
+                    color: 'white',
+                    dashArray: '3',
+                    fillOpacity: 0.8
+                };
+            }
+
+            // 6. Add GeoJSON layer to map
+            L.geoJSON(geoJsonData, {
+                style: heatmapStyle,
+                onEachFeature: function (feature, layer) {
+                    const muniName = feature.properties.label_dk;
+                    const count = counts[muniName] || 0;
+
+                    // Add a popup with the municipality name and count
+                    layer.bindPopup(`<strong>${muniName}</strong><br>Entries: ${count}`);
+                }
+            }).addTo(map);
+
+            // 7 called last to draw schools on top of municipality zones
+            mapEkSchools()
+        })
+        .catch(err => {
+            console.error("Error loading GeoJSON:", err);
+        });
+}
 
 
 // maps the municipalities from a dataset. can be used with a filteted dataset.
 mapMunicipalitiesFromDataset(EKdataset)
-
-
-
-
-
-
-
-
 
 
 function getMunicipalityNames(dataset) {
@@ -258,32 +232,27 @@ function getMunicipalityNames(dataset) {
 }
 
 
-
-
-
-
-
 //////// END__LEAFLET ////////
 //////// START__QUERIES ////////
 
-function getQuotaGender(gender){
+function getQuotaGender(gender) {
     const pipeline = [
         {
-            $match: { "Køn": gender }
+            $match: {"Køn": gender}
         },
         {
             $group: {
                 _id: null,
-                AVGKVOTIENT: { $avg: "$KVOTIENT" }
+                AVGKVOTIENT: {$avg: "$KVOTIENT"}
             }
         }
     ]
 
-    const queryResult = new mingo.Aggregator(pipeline).run(EKdataset);    
-    
+    const queryResult = new mingo.Aggregator(pipeline).run(EKdataset);
+
     const result = queryResult[0].AVGKVOTIENT.toFixed(2)
     // .toFixed(2) limit and rounds to 2 decimals
-    
+
     console.log(result);
     // logs("Mand"): 6.11
     // logs("Kvinde"): 6.83
@@ -291,19 +260,70 @@ function getQuotaGender(gender){
 
 getQuotaGender("Kvinde")
 
+function getAvgQuota() {
+    const pipeline2 = [
+        {
+            $group: {
+                _id: null,
+                AVGKVOTIENT2: {$avg: "$KVOTIENT"}
+            }
+        }
+    ]
+    const queryResult2 = new mingo.Aggregator(pipeline2).run(EKdataset);
 
+    const result = queryResult2[0].AVGKVOTIENT2.toFixed(2)
 
+    console.log(result);
+    //logs 6.42
+}
 
+getAvgQuota()
 
+function getQuotaEducation(education) {
+    const pipeline3 = [
+        {
+            $match: {"INSTITUTIONSAKT_BETEGNELSE": education}
+        },
+        {
+            $group: {
+                _id: null,
+                AVGKVOTIENT3: {$avg: "$KVOTIENT"}
+            }
+        }
+    ]
+    const queryresult3 = new mingo.Aggregator(pipeline3).run(EKdataset);
+
+    const result = queryresult3[0].AVGKVOTIENT3.toFixed(2)
+
+    console.log(result)
+}
+
+getQuotaEducation("Bygningskonstruktør");
+
+function getQuotaEducationGender(gender, education) {
+    const pipeline4 = [
+        {
+            $match: {
+                "Køn": gender,
+                "INSTITUTIONSAKT_BETEGNELSE": education
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                AVGKVOTIENT4: {$avg: "$KVOTIENT"}
+            }
+        }
+    ]
+    const queryresult4 = new mingo.Aggregator(pipeline4).run(EKdataset);
+    const result = queryresult4[0].AVGKVOTIENT4.toFixed(2)
+    console.log(result)
+}
+getQuotaEducationGender("Mand", "Bygningskonstruktør")
 
 
 //////// END__QUERIES ////////
 //////// START__EVENTLISTENERS ////////
-
-
-
-
-
 
 
 //////// END__EVENTLISTENERS ////////
