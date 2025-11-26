@@ -237,23 +237,23 @@ function getMunicipalityNames(dataset) {
 
 //////// Avg kvotient ////////
 function getAvgQuota() {
-    const pipeline2 = [
+    const pipeline = [
         {
             $group: {
                 _id: null,
-                AVGKVOTIENT2: {$avg: "$KVOTIENT"}
+                AVGKVOTIENT: {$avg: "$KVOTIENT"}
             }
         }
     ]
-    const queryResult2 = new mingo.Aggregator(pipeline2).run(EKdataset);
+    const queryResult = new mingo.Aggregator(pipeline).run(EKdataset);
 
-    const result = queryResult2[0].AVGKVOTIENT2.toFixed(2)
+    const result = queryResult[0].AVGKVOTIENT.toFixed(2)
 
     console.log(result);
     //logs 6.42
 }
 
-getAvgQuota()
+//getAvgQuota()
 
 //////// Avg kvotient m. køn ////////
 function getQuotaGender(gender) {
@@ -278,34 +278,60 @@ function getQuotaGender(gender) {
     // logs("Mand"): 6.11
     // logs("Kvinde"): 6.83
 }
-getQuotaGender("Kvinde")
+//getQuotaGender("Kvinde")
 
 //////// Avg kvotient m. uddannelse ////////
 function getQuotaEducation(education) {
-    const pipeline3 = [
+    const pipeline = [
         {
             $match: {"INSTITUTIONSAKT_BETEGNELSE": education}
         },
         {
             $group: {
                 _id: null,
-                AVGKVOTIENT3: {$avg: "$KVOTIENT"}
+                AVGKVOTIENT: {$avg: "$KVOTIENT"}
             }
         }
     ]
-    const queryresult3 = new mingo.Aggregator(pipeline3).run(EKdataset);
+    const queryresult = new mingo.Aggregator(pipeline).run(EKdataset);
 
-    const result = queryresult3[0].AVGKVOTIENT3.toFixed(2)
+    const result = queryresult[0].AVGKVOTIENT.toFixed(2)
 
     console.log(result)
 
 }
+//getQuotaEducation("PB i IT-arkitektur")
 
-getQuotaEducation("Bygningskonstruktør");
+
+//////// Avg kvotient for alle uddannelser ////////
+function getAllEducationQuota() {
+    const pipeline = [
+        {
+            $group: {
+                _id: "$INSTITUTIONSAKT_BETEGNELSE",
+                AVGKVOTIENT: { $avg: { $toDouble: "$KVOTIENT" } }
+            }
+        }
+    ];
+
+    const queryresult = new mingo.Aggregator(pipeline).run(EKdataset);
+
+    // Convert grouped result into clean objects
+    const result = queryresult.map(item => ({
+        education: item._id,
+        averageQuota: Number(item.AVGKVOTIENT.toFixed(2))
+    }));
+
+    console.log(result);
+    return result;
+}
+
+//getAllEducationQuota();
+
 
 //////// Avg kvotient m. køn og uddannelse ////////
 function getQuotaEducationGender(gender, education) {
-    const pipeline4 = [
+    const pipeline = [
         {
             $match: {
                 "Køn": gender,
@@ -315,21 +341,86 @@ function getQuotaEducationGender(gender, education) {
         {
             $group: {
                 _id: null,
-                AVGKVOTIENT4: {$avg: "$KVOTIENT"}
+                AVGKVOTIENT: {$avg: "$KVOTIENT"}
             }
         }
     ]
-    const queryresult4 = new mingo.Aggregator(pipeline4).run(EKdataset);
+    const queryresult = new mingo.Aggregator(pipeline).run(EKdataset);
 
-    const result = queryresult4[0].AVGKVOTIENT4.toFixed(2)
+    const result = queryresult[0].AVGKVOTIENT.toFixed(2)
 
     console.log(result)
 }
-getQuotaEducationGender("Mand", "Bygningskonstruktør")
+//getQuotaEducationGender("Mand", "Bygningskonstruktør")
+
+//////// Avg kvotient m. køn og alle uddannelser ////////
+function getAllQuotaGenderEducation(){
+    const pipeline = [
+        // 1️⃣ Group by both gender and education
+        {
+            $group: {
+                _id: {
+                    education: "$INSTITUTIONSAKT_BETEGNELSE",
+                    gender: "$Køn"
+                },
+                avgQuota: { $avg: { $toDouble: "$KVOTIENT" } }
+            }
+        },
+
+        // 2️⃣ Regroup by only education and restructure fields
+        {
+            $group: {
+                _id: "$_id.INSTITUTIONSAKT_BETEGNELSE",
+                AvgQuotaM: {
+                    $avg: {
+                        $cond: [
+                            { $eq: ["$_id.Køn", "Mand"] },
+                            "$avgQuota",
+                            null
+                        ]
+                    }
+                },
+                AvgQuotaF: {
+                    $avg: {
+                        $cond: [
+                            { $eq: ["$_id.Køn", "Kvinde"] },
+                            "$avgQuota",
+                            null
+                        ]
+                    }
+                }
+            }
+        },
+        // 3️⃣ Optional: replace _id with education
+        {
+            $project: {
+                _id: 0,
+                education: "$_id",
+                AvgQuotaM: 1,
+                AvgQuotaF: 1
+            }
+        }
+    ];
+
+    const results = new mingo.Aggregator(pipeline).run(EKdataset);
+
+    // Round results nicely
+    const formatted = results.map(item => ({
+        education: item.education,
+        AvgQuotaM: item.AvgQuotaM ? Number(item.AvgQuotaM.toFixed(2)) : null,
+        AvgQuotaF: item.AvgQuotaF ? Number(item.AvgQuotaF.toFixed(2)) : null
+    }));
+
+    console.log(formatted);
+    return formatted;
+}
+getAllQuotaGenderEducation()
+
+
 
 //////// Avg alder ////////
 function getAvgAge() {
-    const pipeline5 = [
+    const pipeline7 = [
         {
             $group: {
                 _id: null,
@@ -337,18 +428,18 @@ function getAvgAge() {
             }
         }
     ]
-    const queryresult5 = new mingo.Aggregator(pipeline5).run(EKdataset);
+    const queryresult = new mingo.Aggregator(pipeline7).run(EKdataset);
 
-    const result = queryresult5[0].AVGAGE.toFixed();
+    const result = queryresult[0].AVGAGE.toFixed();
 
     console.log(result)
     // logs("Alder"): 26
 }
-getAvgAge()
+//getAvgAge()
 
 //////// Avg alder m. køn ////////
 function getAvgAgeGender(gender){
-    const pipeline6 = [
+    const pipeline8 = [
         {
             $match: {"Køn": gender}
         },
@@ -359,19 +450,19 @@ function getAvgAgeGender(gender){
             }
         }
     ]
-    const queryresult6 = new mingo.Aggregator(pipeline6).run(EKdataset);
+    const queryresult = new mingo.Aggregator(pipeline8).run(EKdataset);
 
-    const result = queryresult6[0].AVGAGE2.toFixed()
+    const result = queryresult[0].AVGAGE2.toFixed()
 
     console.log(result)
     //logs (Kvinde): 25
     //log (Mand): 27
 }
-getAvgAgeGender("Mand")
+//getAvgAgeGender("Mand")
 
 //////// Avg alder m. uddannelse ////////
 function getAvgAgeEducation(education) {
-    const pipeline7 = [
+    const pipeline9 = [
         {
             $match: {"INSTITUTIONSAKT_BETEGNELSE": education}
         },
@@ -382,17 +473,17 @@ function getAvgAgeEducation(education) {
             }
         }
     ]
-    const queryresult7 = new mingo.Aggregator(pipeline7).run(EKdataset);
+    const queryresult = new mingo.Aggregator(pipeline9).run(EKdataset);
 
-    const result = queryresult7[0].AVGAGE3.toFixed();
+    const result = queryresult[0].AVGAGE3.toFixed();
 
     console.log(result)
 }
-getAvgAgeEducation("PB i IT-arkitektur")
+//getAvgAgeEducation("PB i IT-arkitektur")
 
 //////// Avg alder m. køn og uddannelse ////////
 function getAvgAgeGenderEducation(gender, education){
-    const pipeline8 = [
+    const pipeline10 = [
         {
             $match: {"Køn": gender,
             "INSTITUTIONSAKT_BETEGNELSE": education
@@ -405,13 +496,13 @@ function getAvgAgeGenderEducation(gender, education){
             }
         }
     ]
-    const queryresult8 = new mingo.Aggregator(pipeline8).run(EKdataset);
+    const queryresult = new mingo.Aggregator(pipeline10).run(EKdataset);
 
-    const result = queryresult8[0].AVGAGE4.toFixed();
+    const result = queryresult[0].AVGAGE4.toFixed();
 
     console.log(result)
 }
-getAvgAgeGenderEducation("Kvinde", "PB i IT-arkitektur");
+//getAvgAgeGenderEducation("Mand", "PB i IT-arkitektur");
 
 //////// END__QUERIES ////////
 //////// START__EVENTLISTENERS ////////
