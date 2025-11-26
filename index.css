@@ -1,6 +1,8 @@
 html,body {
     background:linear-gradient(to bottom,#ffda44,#ffe787,#ffeb99,#ffefad) ;
-
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 
