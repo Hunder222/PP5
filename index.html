@@ -8,10 +8,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-<div class="menu">
-    <label for="uddannelse-input" id="tekstud"></label>
-    <input type="search" id="uddannelse-input" name="uddannelse" placeholder="Søg efter uddannelse..." list="uddannelse.list">
-    <div id="radio">
 
     <div>
         <input type="radio" id="kvotient" name="kvotient"  checked>
@@ -23,6 +19,11 @@
         <label for="alder">alder</label>
     </div>
 
+    <div class="menu">
+        <label for="uddannelse-input" id="tekstud"></label>
+        <input type="search" id="uddannelse-input" name="uddannelse" placeholder="Søg efter uddannelse..." list="uddannelse.list">
+        <div id="radio">
+        </div>
 
     <datalist id="uddannelse.list">
         <option value="Alle uddannelser"></option>

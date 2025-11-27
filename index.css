@@ -1,11 +1,11 @@
-*{
+/*{
     outline-style: dotted;
     outline-color: red;
     outline-offset: -1px;
 }
 * {
     box-sizing: border-box;
-}
+}*/
 
 html,body {
     background:linear-gradient(to bottom,#ffcd03,#ffda44,#ffe787,#ffeb99,#ffefad) ;
