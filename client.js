@@ -1,5 +1,9 @@
 // DOM
 const testField = document.querySelector("#testField");
+const genderChartElement = document.querySelector("#genderChart")
+const ageChartElement = document.querySelector("#ageChart")
+const quotaChartElement = document.querySelector("#quotaChart")
+
 
 
 console.log(EKdataset[0]);
@@ -9,38 +13,48 @@ console.log(EKdataset[0]);
 
 
 const exampleData = {
-    averageQuota: 5.5,
-    AvgQuotaM: 5.1,
-    AvgQuotaF: 5.9,
-    genders: {
-        male:   [57, 51, 61, 59, 55],
-        female: [43, 49, 39, 41, 45]
+    general: {
+        averageQuota: 5.5,
+        avgQuotaM: 5.1,
+        avgQuotaF: 5.9,
+        genders: {
+            male: [57, 51, 61, 59, 55],
+            female: [43, 49, 39, 41, 45]
+        }
+    },
+    educations: {
+        names: ['ITAR', 'LOREM', 'IPSUM', 'DOLOR', 'AMET'],
+        ages: [
+            [23, 23, 34, 19, 35, 22, 21, 22, 56, 22, 24],
+            [23, 23, 34, 19, 35, 22, 21, 22, 22, 22, 24],
+            [23, 23, 34, 33, 35, 22, 21, 22, 22, 22, 24],
+            [23, 23, 34, 21, 35, 22, 21, 22, 44, 22, 24],
+            [23, 23, 34, 18, 35, 22, 21, 22, 38, 22, 24],
+            [23, 23, 34, 37, 35, 22, 32, 22, 30, 22, 24]
+        ],
+        agesAvg: [25,23,22,28,31],
+        quotasAvg: [5.4, 4.5, 5.1, 6.1, 5.7]
     }
 }
 
-
-const chartCanvas = document.querySelector("#chartCanvas")
-
-//Chart.register(ChartDataLabels);
-
-console.log(exampleData.genders.male);
-
 Chart.register(ChartDataLabels)
-let barChart = new Chart(chartCanvas, {
+
+
+
+// gender chart
+let genderChart = new Chart(genderChartElement, {
     type: 'bar',
     data: {
-        labels: ['1','2','3','4','5'],
+        labels: exampleData.educations.names,
         datasets: [
             {
                 label: 'Mand',
-
-                data: exampleData.genders.male,
+                data: exampleData.general.genders.male,
                 backgroundColor: '#36a2eb',
             },
             {
                 label: 'Kvinde',
-
-                data: exampleData.genders.female,
+                data: exampleData.general.genders.female,
                 backgroundColor: '#ff6384',
             }
         ]
@@ -73,21 +87,124 @@ let barChart = new Chart(chartCanvas, {
             y: {
                 stacked: true,
                 min: 0,
-                // 3. Graceful Max Limit
-                // We do NOT set 'max: 100' here.
-                // Why? If floating point math makes the total 100.00001,
-                // 'max: 100' might cut the top pixel off.
-                // Instead, we let Chart.js auto-scale, or set it to slightly over 100 just in case.
                 suggestedMax: 100,
             }
         }
     }
 });
 
-barChart.update()
+genderChart.update()
 
 
 
+let ageChart = new Chart(ageChartElement, {
+    type: 'boxplot', 
+    data: {
+        // Labels for the X-axis
+        labels: exampleData.educations.names,
+        datasets: [{
+            label: 'Alder i uddannelser',
+            data: exampleData.educations.ages,
+            backgroundColor: 'rgba(104, 99, 255, 0.5)',
+            borderColor: 'rgba(99, 138, 255, 1)',
+            borderWidth: 1,
+            outlierColor: '#999999',
+            outlierOpacity: 1,
+            padding: 10
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Chart.js Box Plot Example'
+            },
+            tooltip: {
+                // The plugin has its own tooltip logic built-in
+                mode: 'index',
+                intersect: false
+            },
+            datalabels:{
+                display: true,
+
+                formatter: function (value, context) {
+                    // context.dataIndex is 0, 1, 2...
+                    const ageAvg = exampleData.educations.agesAvg[context.dataIndex]
+                    console.log(value);
+                    
+                    
+                    return `Avg: ${ageAvg}`;
+                },
+
+                // Optional: Styling to position the label nicely
+                color: 'black',
+                font: {
+                    weight: 'bold'
+                },
+                anchor: 'end', // Position anchor at the top of the box/whisker
+                align: 'top',  // Move the text up away from the anchor
+                offset: 4      // Add a little pixel spacing
+            }
+        }
+    }
+});
+
+ageChart.update()
+
+
+let quotaChart = new Chart(quotaChartElement, {
+    type: 'bar',
+    data: {
+        // Labels for the X-axis
+        labels: exampleData.educations.names,
+        datasets: [{
+            label: 'Kvotienter i uddannelser',
+            data: exampleData.educations.quotasAvg,
+            backgroundColor: 'rgba(104, 99, 255, 0.5)',
+            borderColor: 'rgba(99, 138, 255, 1)',
+            borderWidth: 1,
+            outlierColor: '#999999',
+            outlierOpacity: 1,
+            padding: 10
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Chart.js Box Plot Example'
+            },
+            tooltip: {
+                // The plugin has its own tooltip logic built-in
+                mode: 'index',
+                intersect: false
+            },
+            datalabels: {
+                display: true,
+
+                formatter: function (value, context) {
+                    // context.dataIndex is 0, 1, 2...
+                    const ageAvg = exampleData.educations.agesAvg[context.dataIndex]
+                    console.log(value);
+
+
+                    return `Avg: ${ageAvg}`;
+                },
+
+                // Optional: Styling to position the label nicely
+                color: 'black',
+                font: {
+                    weight: 'bold'
+                },
+                anchor: 'end', // Position anchor at the top of the box/whisker
+                align: 'top',  // Move the text up away from the anchor
+                offset: 4      // Add a little pixel spacing
+            }
+        }
+    }
+});
 
 
 
@@ -291,7 +408,7 @@ function mapMunicipalitiesFromDataset(datasetToVisualize) {
                     const count = counts[muniName] || 0;
 
                     // Add a popup with the municipality name and count
-                    layer.bindPopup(`<strong>${muniName}</strong><br>Entries: ${count}`);
+                    layer.bindTooltip(`<strong>${muniName}</strong><br>${count} Optagelser`);
                 }
             }).addTo(map);
 
