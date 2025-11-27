@@ -10,7 +10,7 @@ html,body {
     border:2px solid black;
     height:700px;
     width:96.5vw;
-    padding:10px;
+    padding:5px;
     margin:10px;
     display:flex;
     flex-direction: row;
@@ -19,43 +19,52 @@ html,body {
 /*Container til højresidet charts*/
 .højreCharts{
     height:680px;
-    border:2px solid black;
-    width:450px;
-    padding-top: 1px;
-    padding-bottom: 1px;
-    padding-right: 5px;
-    padding-left: 1px;
+    /*border:2px solid black;*/
+    width:455px;
+    margin:5px;
+    display: flex;
+    flex-direction: column;
 }
 
 /*Container til venstresidet charts*/
 .venstreCharts{
     height:680px;
-    border:2px solid black;
+    /*border:2px solid black;*/
     width: 750px;
-    padding-top:1px;
-    padding-left:5px;
-    padding-right:1px;
-    padding-bottom:1px ;
-    margin:1px;
-    margin-right:5px;
+    margin:5px;
+    display:flex;
+    flex-direction: column;
 }
 
 /*container til statsborgerskab*/
 .chart1{
+    border:2px solid black;
+    width:455px;
+    height:335px;
+    margin-bottom:5px;
 
 }
 
 /*container til heatmap */
 .chart2{
-
+    width: 455px;
+    height:335px;
+    border:2px solid black;
+    margin-top:5px;
 }
 
 /*Container til studieretninger før EK*/
 .chart3{
-
+    width:750px;
+    height:335px;
+    border:2px solid black;
+    margin-bottom:5px;
 }
 
 /*container til 1. prio vs 2-10 prio*/
 .chart4{
-
+    width: 750px;
+    height:335px;
+    border:2px solid black;
+    margin-top:5px;
 }
