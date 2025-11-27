@@ -411,7 +411,7 @@ function getAllAvg() {
         
     }
 }
-//getAllAvg()
+getAllAvg()
 
 
 
@@ -524,7 +524,7 @@ function getStatsForEducation (uddannelse) {
 
     createMapFromDataset(results)
 }
-//getStatsForEducation("Datamatiker")
+getStatsForEducation("Datamatiker")
 
 
 //////// END__QUERIES ////////
