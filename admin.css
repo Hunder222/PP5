@@ -1,0 +1,15 @@
+html,body {
+    background:linear-gradient(to bottom,#ffcd03,#ffda44,#ffe787,#ffeb99,#ffefad, white) ;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* "ydre" box --> chart container*/
+.container {
+    border: 2px solid black;
+    height: 700px;
+    width: 1200px;
+    padding: 10px;
+    margin: 20px;
+}
