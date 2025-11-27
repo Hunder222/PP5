@@ -17,10 +17,11 @@ const exampleData = {
         averageQuota: 5.5,
         avgQuotaM: 5.1,
         avgQuotaF: 5.9,
-        genders: {
-            male: [57, 51, 61, 59, 55],
-            female: [43, 49, 39, 41, 45]
-        }
+        genderM: 57,
+        genderF: 43,
+        avgAge: 24,
+        avgAgeM: 28,
+        avgAgeF: 23
     },
     educations: {
         names: ['ITAR', 'LOREM', 'IPSUM', 'DOLOR', 'AMET'],
@@ -33,7 +34,18 @@ const exampleData = {
             [23, 23, 34, 37, 35, 22, 32, 22, 30, 22, 24]
         ],
         agesAvg: [25,23,22,28,31],
-        quotasAvg: [5.4, 4.5, 5.1, 6.1, 5.7]
+        quotas: [
+            [5.4, 4.5, 4.6, 6.6, 5.7],
+            [4.4, 5.5, 3.1, 2.5, 4.6],
+            [2.4, 4.7, 5.6, 5.4, 5.5],
+            [3.4, 2.5, 4.1, 4.2, 2.3],
+            [1.4, 3.5, 5.2, 3.4, 4.2]
+        ],
+        quotasAvg: [5.4, 4.5, 5.1, 6.1, 5.7],
+        genders: {
+            male: [57, 51, 61, 59, 55],
+            female: [43, 49, 39, 41, 45]
+        }
     }
 }
 
@@ -49,12 +61,12 @@ let genderChart = new Chart(genderChartElement, {
         datasets: [
             {
                 label: 'Mand',
-                data: exampleData.general.genders.male,
+                data: exampleData.educations.genders.male,
                 backgroundColor: '#36a2eb',
             },
             {
                 label: 'Kvinde',
-                data: exampleData.general.genders.female,
+                data: exampleData.educations.genders.female,
                 backgroundColor: '#ff6384',
             }
         ]
@@ -110,6 +122,10 @@ let ageChart = new Chart(ageChartElement, {
             borderWidth: 1,
             outlierColor: '#999999',
             outlierOpacity: 1,
+            meanRadius: 10,                 // Make it big enough to see
+            meanBackgroundColor: 'red', // High contrast color
+            meanBorderColor: 'black',      // Sharp border
+            meanBorderWidth: 1,
             padding: 10
         }]
     },
@@ -142,15 +158,16 @@ let ageChart = new Chart(ageChartElement, {
                 font: {
                     weight: 'bold'
                 },
-                anchor: 'end', // Position anchor at the top of the box/whisker
-                align: 'top',  // Move the text up away from the anchor
-                offset: 4      // Add a little pixel spacing
+                anchor: 'center', // Position anchor at the top of the box/whisker
+                align: 'center',  // Move the text up away from the anchor
+                offset: 0      // Add a little pixel spacing
             }
         }
     }
 });
 
 ageChart.update()
+
 
 
 let quotaChart = new Chart(quotaChartElement, {
@@ -164,8 +181,6 @@ let quotaChart = new Chart(quotaChartElement, {
             backgroundColor: 'rgba(104, 99, 255, 0.5)',
             borderColor: 'rgba(99, 138, 255, 1)',
             borderWidth: 1,
-            outlierColor: '#999999',
-            outlierOpacity: 1,
             padding: 10
         }]
     },
@@ -174,7 +189,7 @@ let quotaChart = new Chart(quotaChartElement, {
         plugins: {
             title: {
                 display: true,
-                text: 'Chart.js Box Plot Example'
+                text: 'Kvotienter i uddannelser'
             },
             tooltip: {
                 // The plugin has its own tooltip logic built-in
