@@ -5,7 +5,6 @@ const ageChartElement = document.querySelector("#ageChart")
 const quotaChartElement = document.querySelector("#quotaChart")
 
 
-
 console.log(EKdataset[0]);
 
 
@@ -32,13 +31,12 @@ const exampleData = {
             [23, 23, 34, 18, 35, 22, 21, 22, 38, 22, 24],
             [23, 23, 34, 37, 35, 22, 32, 22, 30, 22, 24]
         ],
-        agesAvg: [25,23,22,28,31],
+        agesAvg: [25, 23, 22, 28, 31],
         quotasAvg: [5.4, 4.5, 5.1, 6.1, 5.7]
     }
 }
 
 Chart.register(ChartDataLabels)
-
 
 
 // gender chart
@@ -75,7 +73,7 @@ let genderChart = new Chart(genderChartElement, {
             // 2. Clean up the Labels (the text on the bar)
             datalabels: {
                 color: 'white',
-                font: { weight: 'bold' },
+                font: {weight: 'bold'},
                 // Round to 1 decimal place, e.g., "33.3%"
                 formatter: (value) => {
                     return value.toFixed(1) + '%';
@@ -83,7 +81,7 @@ let genderChart = new Chart(genderChartElement, {
             }
         },
         scales: {
-            x: { stacked: true },
+            x: {stacked: true},
             y: {
                 stacked: true,
                 min: 0,
@@ -96,9 +94,8 @@ let genderChart = new Chart(genderChartElement, {
 genderChart.update()
 
 
-
 let ageChart = new Chart(ageChartElement, {
-    type: 'boxplot', 
+    type: 'boxplot',
     data: {
         // Labels for the X-axis
         labels: exampleData.educations.names,
@@ -125,15 +122,15 @@ let ageChart = new Chart(ageChartElement, {
                 mode: 'index',
                 intersect: false
             },
-            datalabels:{
+            datalabels: {
                 display: true,
 
                 formatter: function (value, context) {
                     // context.dataIndex is 0, 1, 2...
                     const ageAvg = exampleData.educations.agesAvg[context.dataIndex]
                     console.log(value);
-                    
-                    
+
+
                     return `Avg: ${ageAvg}`;
                 },
 
@@ -207,9 +204,6 @@ let quotaChart = new Chart(quotaChartElement, {
 });
 
 
-
-
-
 //////// END__CHARTJS ////////
 //////// START___LEAFLET ////////
 
@@ -228,7 +222,6 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r
     subdomains: 'abcd',
     maxZoom: 20
 }).addTo(map);
-
 
 
 // add EK schools to map
@@ -444,53 +437,64 @@ function getMunicipalityNames(dataset) {
 
 //////// END__LEAFLET ////////
 //////// START__QUERIES ////////
+function getAllAvg() {
 
-
-// Avg kvotient 
-function getAvgQuota() {
     const pipeline = [
         {
+            // Stage 1: Calculate raw sums and averages
             $group: {
                 _id: null,
-                AVGKVOTIENT: {$avg: "$KVOTIENT"}
+                totalCount: {$sum: 1},
+                // Conditional Sums for percentages
+                countM: {$sum: {$cond: [{$eq: ["$Køn", "Mand"]}, 1, 0]}},
+                countF: {$sum: {$cond: [{$eq: ["$Køn", "Kvinde"]}, 1, 0]}},
+
+                // Overall Average
+                avgQuota: {$avg: "$KVOTIENT"},
+
+                // Conditional Averages for Quota
+                avgQuotaM: {$avg: {$cond: [{$eq: ["$Køn", "Mand"]}, "$KVOTIENT", null]}},
+                avgQuotaF: {$avg: {$cond: [{$eq: ["$Køn", "Kvinde"]}, "$KVOTIENT", null]}},
+
+                // Overall Age
+                avgAge: {$avg: "$Alder"},
+
+                // Conditional Averages for Age
+                avgAgeM: {$avg: {$cond: [{$eq: ["$Køn", "Mand"]}, "$Alder", null]}},
+                avgAgeF: {$avg: {$cond: [{$eq: ["$Køn", "Kvinde"]}, "$Alder", null]}}
             }
-        }
-    ]
-    const queryResult = new mingo.Aggregator(pipeline).run(EKdataset);
-
-    const result = queryResult[0].AVGKVOTIENT.toFixed(2)
-
-    console.log(result);
-    //logs 6.42
-}
-//getAvgQuota()
-
-
-// Avg kvotient m. køn
-function getQuotaGender(gender) {
-    const pipeline = [
-        {
-            $match: {"Køn": gender}
         },
         {
-            $group: {
-                _id: null,
-                AVGKVOTIENT: {$avg: "$KVOTIENT"}
+            // Stage 2: Format the output and calculate percentages
+            $project: {
+                _id: 0,
+                general: {
+                    averageQuota: {$round: ["$avgQuota", 1]},
+                    avgQuotaM: {$round: ["$avgQuotaM", 1]},
+                    avgQuotaF: {$round: ["$avgQuotaF", 1]},
+
+                    // Calculate Percentage: (Count / Total) * 100
+                    genderM: {$round: [{$multiply: [{$divide: ["$countM", "$totalCount"]}, 100]}, 1]},
+                    genderF: {$round: [{$multiply: [{$divide: ["$countF", "$totalCount"]}, 100]}, 1]},
+
+                    avgAge: {$round: ["$avgAge", 0]},
+                    avgAgeM: {$round: ["$avgAgeM", 0]},
+                    avgAgeF: {$round: ["$avgAgeF", 0]}
+                }
             }
         }
     ]
-
     const queryResult = new mingo.Aggregator(pipeline).run(EKdataset);
 
-    const result = queryResult[0].AVGKVOTIENT.toFixed(2)
-    // .toFixed(2) limit and rounds to 2 decimals
+    const result = queryResult.all ? queryResult.all(): queryResult;
 
-    console.log(result);
-    // logs("Mand"): 6.11
-    // logs("Kvinde"): 6.83
+    if (result.length > 0) {
+        const resultObj = result[0].general;
+
+        console.log(resultObj);
+    }
 }
-//getQuotaGender("Kvinde")
-
+getAllAvg()
 
 // Avg kvotient m. uddannelse
 function getQuotaEducation(education) {
@@ -512,6 +516,7 @@ function getQuotaEducation(education) {
     console.log(result)
 
 }
+
 //getQuotaEducation("PB i IT-arkitektur")
 
 
@@ -521,7 +526,7 @@ function getAllEducationQuota() {
         {
             $group: {
                 _id: "$INSTITUTIONSAKT_BETEGNELSE",
-                AVGKVOTIENT: { $avg: { $toDouble: "$KVOTIENT" } }
+                AVGKVOTIENT: {$avg: {$toDouble: "$KVOTIENT"}}
             }
         }
     ];
@@ -537,6 +542,7 @@ function getAllEducationQuota() {
     console.log(result);
     return result;
 }
+
 //getAllEducationQuota();
 
 
@@ -562,11 +568,12 @@ function getQuotaEducationGender(gender, education) {
 
     console.log(result)
 }
+
 //getQuotaEducationGender("Mand", "Bygningskonstruktør")
 
 
 // Avg kvotient m. køn og alle uddannelser
-function getAllQuotaGenderEducation(){
+function getAllQuotaGenderEducation() {
     const pipeline = [
         {
             $group: {
@@ -575,8 +582,8 @@ function getAllQuotaGenderEducation(){
                 AvgQuotaM: {
                     $avg: {
                         $cond: [
-                            { $eq: ["$Køn", "Mand"] },
-                            { $toDouble: "$KVOTIENT" },
+                            {$eq: ["$Køn", "Mand"]},
+                            {$toDouble: "$KVOTIENT"},
                             null
                         ]
                     }
@@ -586,8 +593,8 @@ function getAllQuotaGenderEducation(){
                     $avg: {
                         $cond: [
                             // Note: Ensure this matches your data (e.g., "Kvinde")
-                            { $eq: ["$Køn", "Kvinde"] },
-                            { $toDouble: "$KVOTIENT" },
+                            {$eq: ["$Køn", "Kvinde"]},
+                            {$toDouble: "$KVOTIENT"},
                             null
                         ]
                     }
@@ -605,7 +612,7 @@ function getAllQuotaGenderEducation(){
         }
     ];
 
-    const results = new mingo.Aggregator(pipeline).run(EKdataset);    
+    const results = new mingo.Aggregator(pipeline).run(EKdataset);
 
     // Round results nicely
     const formatted = results.map(item => ({
@@ -617,11 +624,11 @@ function getAllQuotaGenderEducation(){
     console.log(formatted);
     return formatted;
 }
-getAllQuotaGenderEducation()
+
+//getAllQuotaGenderEducation()
 
 
-
-// Avg alder 
+// Avg alder
 function getAvgAge() {
     const pipeline7 = [
         {
@@ -638,11 +645,12 @@ function getAvgAge() {
     console.log(result)
     // logs("Alder"): 26
 }
+
 //getAvgAge()
 
 
 // Avg alder m. køn 
-function getAvgAgeGender(gender){
+function getAvgAgeGender(gender) {
     const pipeline8 = [
         {
             $match: {"Køn": gender}
@@ -662,6 +670,7 @@ function getAvgAgeGender(gender){
     //logs (Kvinde): 25
     //log (Mand): 27
 }
+
 //getAvgAgeGender("Mand")
 
 
@@ -684,15 +693,17 @@ function getAvgAgeEducation(education) {
 
     console.log(result)
 }
+
 //getAvgAgeEducation("PB i IT-arkitektur")
 
 
 // Avg alder m. køn og uddannelse
-function getAvgAgeGenderEducation(gender, education){
+function getAvgAgeGenderEducation(gender, education) {
     const pipeline10 = [
         {
-            $match: {"Køn": gender,
-            "INSTITUTIONSAKT_BETEGNELSE": education
+            $match: {
+                "Køn": gender,
+                "INSTITUTIONSAKT_BETEGNELSE": education
             }
         },
         {
@@ -708,6 +719,7 @@ function getAvgAgeGenderEducation(gender, education){
 
     console.log(result)
 }
+
 //getAvgAgeGenderEducation("Mand", "PB i IT-arkitektur");
 
 //////// END__QUERIES ////////
