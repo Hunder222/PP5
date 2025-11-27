@@ -1,7 +1,10 @@
 // DOM
 const genderChartElement = document.querySelector("#genderChart")
 const comboChartElement = document.querySelector("#comboChart")
-
+const hej = document.querySelector("#kvotient")
+hej.addEventListener("click",()=>{
+  console.log("hej")
+})
 
 console.log(EKdataset[0]);
 

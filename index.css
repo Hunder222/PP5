@@ -15,10 +15,8 @@ html,body {
 }
 
 
-#leafletMapDK {
-    height: 70vh;
-    width: 80vw;
-}
+
+
 
 .box1{
     display: grid;
@@ -32,13 +30,8 @@ margin-left: 58vw;
     width: 40vw;
 
 }
-#leafletMapDK{
-    display: grid;
-    width: 40vw;
-height: 60vh;
-   margin: 0;
 
-}
+
 
 #uddannelse-input{
    display: grid;
@@ -61,12 +54,9 @@ background-color: honeydew;
 
 
 
-    }
 
-.charts > * {
-    grid-area: 1 / 1;
-    max-width: 100%;
-    display: flex;
+
+
 
 
 }
@@ -83,5 +73,46 @@ canvas {
     max-width: 100%;
 }
 
+#comboChart{
+
+    display: grid;
+    place-content: center;
+    grid-template-columns: auto auto auto;
+    width: 90vw;
 
 
+}
+.test{
+    display: grid;
+    place-content: center;
+    grid-template-columns: auto auto auto;
+    width: 90vw;
+    margin-left: 5vw  ;
+
+}
+.test2{
+    display: grid;
+    place-content: center;
+    grid-template-columns: auto auto auto;
+
+      width: 90vw;
+    height: 90vh;
+    margin-right: 2vh;
+    margin-left: 9vh;
+
+}
+#leafletMapDK {
+    display: grid;
+    width: 40vw;
+height: 50vh;
+
+}
+#genderChart{
+    height: 50vh;
+max-height: 50vh;
+}
+#radio{
+    display: flex;
+
+
+}
