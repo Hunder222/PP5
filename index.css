@@ -10,3 +10,31 @@ html,body {
     height: 70vh;
     width: 80vw;
 }
+
+.box1{
+    display: grid;
+
+
+    grid-template-columns: auto auto auto;
+    background-color: dodgerblue;
+
+    margin-top: 10vh;
+margin-left: 58vw;
+    width: 40vw;
+
+}
+#leafletMapDK{
+    display: grid;
+    width: 40vw;
+height: 60vh;
+   margin: 0;
+
+}
+
+.menu{
+   display: grid;
+    width: 20vw;
+    margin-left: 78vw;
+    height: 5vh;
+
+}
