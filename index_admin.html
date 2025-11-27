@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Ek data - administration</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="admin.css">
-
 </head>
 <body>
 <div id="chartContainer" class="container">
@@ -15,15 +15,17 @@
         </div>
 
         <div id="heatMapContainer" class="chart2">
-            <canvas id="heatMap"></canvas>
+            <div id="heatMap">
+            
+            </div>
         </div>
     </div>
-
+    
     <div class="venstreCharts">
         <div id="studieretningContainer" class="chart3">
             <canvas id="studieretning"></canvas>
         </div>
-
+        
         <div id="førstePrioritetContainer" class="chart4">
             <canvas id="førstePrioritet"></canvas>
         </div>

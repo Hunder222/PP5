@@ -41,16 +41,13 @@ html,body {
     border:2px solid black;
     width:455px;
     height:335px;
-    margin-bottom:5px;
-
 }
 
 /*container til heatmap */
 .chart2{
     width: 455px;
-    height:335px;
+    height: 420px;
     border:2px solid black;
-    margin-top:5px;
 }
 
 /*Container til studieretninger før EK*/
@@ -67,4 +64,14 @@ html,body {
     height:335px;
     border:2px solid black;
     margin-top:5px;
+}
+
+#heatMap {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+#statsborgerskab {
+    height: 100%;
 }
