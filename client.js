@@ -437,6 +437,8 @@ function getMunicipalityNames(dataset) {
 
 //////// END__LEAFLET ////////
 //////// START__QUERIES ////////
+
+// Får average for køn, alder og kvotient
 function getAllAvg() {
 
     const pipeline = [
@@ -486,7 +488,7 @@ function getAllAvg() {
     ]
     const queryResult = new mingo.Aggregator(pipeline).run(EKdataset);
 
-    const result = queryResult.all ? queryResult.all(): queryResult;
+    const result = queryResult.all ? queryResult.all() : queryResult;
 
     if (result.length > 0) {
         const resultObj = result[0].general;
@@ -494,138 +496,102 @@ function getAllAvg() {
         console.log(resultObj);
     }
 }
-getAllAvg()
+//getAllAvg()
 
-// Avg kvotient m. uddannelse
-function getQuotaEducation(education) {
+// Får average for uddannelser med brug af køn, alder og kvotient
+function getAvgForEducation() {
     const pipeline = [
         {
-            $match: {"INSTITUTIONSAKT_BETEGNELSE": education}
-        },
-        {
-            $group: {
-                _id: null,
-                AVGKVOTIENT: {$avg: "$KVOTIENT"}
-            }
-        }
-    ]
-    const queryresult = new mingo.Aggregator(pipeline).run(EKdataset);
-
-    const result = queryresult[0].AVGKVOTIENT.toFixed(2)
-
-    console.log(result)
-
-}
-
-//getQuotaEducation("PB i IT-arkitektur")
-
-
-// Avg kvotient for alle uddannelser
-function getAllEducationQuota() {
-    const pipeline = [
-        {
+            // STAGE 1: Group by Education Name first
             $group: {
                 _id: "$INSTITUTIONSAKT_BETEGNELSE",
-                AVGKVOTIENT: {$avg: {$toDouble: "$KVOTIENT"}}
-            }
-        }
-    ];
-
-    const queryresult = new mingo.Aggregator(pipeline).run(EKdataset);
-
-    // Convert grouped result into clean objects
-    const result = queryresult.map(item => ({
-        education: item._id,
-        averageQuota: Number(item.AVGKVOTIENT.toFixed(2))
-    }));
-
-    console.log(result);
-    return result;
-}
-
-//getAllEducationQuota();
 
 
-// Avg kvotient m. køn og uddannelse
-function getQuotaEducationGender(gender, education) {
-    const pipeline = [
-        {
-            $match: {
-                "Køn": gender,
-                "INSTITUTIONSAKT_BETEGNELSE": education
+                // Collect raw arrays for this specific education
+                ages: {$push: "$Alder"},
+                quotas: {$push: "$KVOTIENT"},
+
+
+                // Calculate stats for this education
+                avgAge: {$avg: "$Alder"},
+                avgQuota: {$avg: "$KVOTIENT"},
+
+
+                // Counts for percentage calc
+                totalCount: {$sum: 1},
+                countM: {$sum: {$cond: [{$eq: ["$Køn", "Mand"]}, 1, 0]}},
+                countF: {$sum: {$cond: [{$eq: ["$Køn", "Kvinde"]}, 1, 0]}}
             }
         },
         {
+            // STAGE 2: Format the single education stats (Percentages & Rounding)
+            $project: {
+                name: "$_id", // Rename _id to name for clarity
+                ages: 1,
+                quotas: 1,
+                avgAge: {$round: ["$avgAge", 0]},
+                avgQuota: {$round: ["$avgQuota", 1]},
+                // Calculate %
+                pctM: {$round: [{$multiply: [{$divide: ["$countM", "$totalCount"]}, 100]}, 0]},
+                pctF: {$round: [{$multiply: [{$divide: ["$countF", "$totalCount"]}, 100]}, 0]}
+            }
+        },
+        {
+            // STAGE 3: Sort Alphabetically (Ensures index 0 matches across all arrays)
+            $sort: {name: 1}
+        },
+        {
+            // STAGE 4: Group Everything into the final arrays
+            // Because we sorted in Stage 3, the pushes here happen in alphabetical order
             $group: {
                 _id: null,
-                AVGKVOTIENT: {$avg: "$KVOTIENT"}
-            }
-        }
-    ]
-    const queryresult = new mingo.Aggregator(pipeline).run(EKdataset);
-
-    const result = queryresult[0].AVGKVOTIENT.toFixed(2)
-
-    console.log(result)
-}
-
-//getQuotaEducationGender("Mand", "Bygningskonstruktør")
+                names: {$push: "$name"},
 
 
-// Avg kvotient m. køn og alle uddannelser
-function getAllQuotaGenderEducation() {
-    const pipeline = [
-        {
-            $group: {
-                _id: "$INSTITUTIONSAKT_BETEGNELSE",
-                // Calculate Male Average: If Gender is Mand, take KVOTIENT, else ignore (null)
-                AvgQuotaM: {
-                    $avg: {
-                        $cond: [
-                            {$eq: ["$Køn", "Mand"]},
-                            {$toDouble: "$KVOTIENT"},
-                            null
-                        ]
-                    }
-                },
-                // Calculate Female Average: If Gender is Kvinde, take KVOTIENT, else ignore (null)
-                AvgQuotaF: {
-                    $avg: {
-                        $cond: [
-                            // Note: Ensure this matches your data (e.g., "Kvinde")
-                            {$eq: ["$Køn", "Kvinde"]},
-                            {$toDouble: "$KVOTIENT"},
-                            null
-                        ]
-                    }
-                }
+                // Pushing an array into a group creates an array of arrays [[21,24...], [22,25...]]
+                ages: {$push: "$ages"},
+                agesAvg: {$push: "$avgAge"},
+
+
+                quotas: {$push: "$quotas"},
+                quotasAvg: {$push: "$avgQuota"},
+
+
+                genderPctM: {$push: "$pctM"},
+                genderPctF: {$push: "$pctF"}
             }
         },
-        // Optional: Formatting to match your desired output structure
         {
+            // STAGE 5: Final wrapper to match your key structure
             $project: {
                 _id: 0,
-                education: "$_id",
-                AvgQuotaM: 1,
-                AvgQuotaF: 1
+                educations: {
+                    names: "$names",
+                    ages: "$ages",
+                    agesAvg: "$agesAvg",
+                    quotas: "$quotas",
+                    quotasAvg: "$quotasAvg",
+                    genderPctM: "$genderPctM",
+                    genderPctF: "$genderPctF"
+                }
             }
         }
     ];
 
-    const results = new mingo.Aggregator(pipeline).run(EKdataset);
+    const queryResult = new mingo.Aggregator(pipeline).run(EKdataset);
 
-    // Round results nicely
-    const formatted = results.map(item => ({
-        education: item.education,
-        AvgQuotaM: item.AvgQuotaM ? Number(item.AvgQuotaM.toFixed(2)) : null,
-        AvgQuotaF: item.AvgQuotaF ? Number(item.AvgQuotaF.toFixed(2)) : null
-    }));
+    const result = queryResult.all ? queryResult.all() : queryResult;
 
-    console.log(formatted);
-    return formatted;
+    if (result.length > 0) {
+        const resultObj = result[0].educations;
+
+        console.log(resultObj);
+    }
 }
+getAvgForEducation()
 
-//getAllQuotaGenderEducation()
+
+
 
 
 // Avg alder
