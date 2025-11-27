@@ -436,6 +436,7 @@ function getMunicipalityNames(dataset) {
 
 
 //////// END__LEAFLET ////////
+
 //////// START__QUERIES ////////
 
 // Får average for køn, alder og kvotient
@@ -588,9 +589,55 @@ function getAvgForEducation() {
         console.log(resultObj);
     }
 }
-getAvgForEducation()
+//getAvgForEducation()
+
+
+// Finder alt data indenfor en givet uddannelse
+function getStatsForEducation (uddannelse) {
+    if (!uddannelse) return null;
+
+    const pipeline = [
+        {
+            // STAGE 1: Filtrér (WHERE) data for kun at inkludere den valgte uddannelse
+            $match: {
+                "INSTITUTIONSAKT_BETEGNELSE": uddannelse
+            }
+        },
+        {
+            // STAGE 2: Gruppér og beregn nøgletal (fra din tidligere pipeline)
+            $group: {
+                _id: null,
+                avgAge: {$avg: "$Alder"},
+                avgQuota: {$avg: "$KVOTIENT"},
+                totalCount: {$sum: 1},
+                countM: {$sum: {$cond: [{$eq: ["$Køn", "Mand"]}, 1, 0]}},
+                countF: {$sum: {$cond: [{$eq: ["$Køn", "Kvinde"]}, 1, 0]}}
+            }
+        },
+        {
+            // STAGE 3: Formater og udregn procenter
+            $project: {
+                _id: 0,
+                education: uddannelse, // Tilføj navnet til output
+                avgAge: {$round: ["$avgAge", 0]},
+                avgQuota: {$round: ["$avgQuota", 1]},
+                genderpctM: {$round: [{$multiply: [{$divide: ["$countM", "$totalCount"]}, 100]}, 0]},
+                genderpctF: {$round: [{$multiply: [{$divide: ["$countF", "$totalCount"]}, 100]}, 0]}
+            }
+        }
+    ];
+
+    const queryResult = new mingo.Aggregator(pipeline).run(EKdataset);
+    const results = queryResult.all ? queryResult.all() : queryResult;
+
+    // Returnerer det aggregerede objekt, eller null hvis ingen data
+    console.log(results.length > 0 ? results[0] : null);
+}
+//getStatsForEducation("PB i IT-arkitektur")
+
 
 //////// END__QUERIES ////////
+
 //////// START__EVENTLISTENERS ////////
 
 
