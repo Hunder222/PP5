@@ -1,41 +1,43 @@
 // DOM
 const testField = document.querySelector("#testField");
 const genderChartElement = document.querySelector("#genderChart")
-const ageChartElement = document.querySelector("#ageChart")
-const quotaChartElement = document.querySelector("#quotaChart")
+const comboChartElement = document.querySelector("#comboChart")
 
 
 console.log(EKdataset[0]);
 
-
-//////// START__CHARTJS ////////
-
-
-const exampleData = {
+// data
+const queriedData = {
     general: {
-        averageQuota: 5.5,
-        avgQuotaM: 5.1,
-        avgQuotaF: 5.9,
-        genderM: 57,
-        genderF: 43,
-        avgAge: 24,
-        avgAgeM: 28,
-        avgAgeF: 23
+        averageQuota: 0,
+        avgQuotaM: 0,
+        avgQuotaF: 0,
+        genderM: 0,
+        genderF: 0,
+        avgAge: 0,
+        avgAgeM: 0,
+        avgAgeF: 0
     },
     educations: {
-        names: ['ITAR', 'LOREM', 'IPSUM', 'DOLOR', 'AMET'],
-        ages: [
-            [23, 23, 34, 19, 35, 22, 21, 22, 56, 22, 24],
-            [23, 23, 34, 19, 35, 22, 21, 22, 22, 22, 24],
-            [23, 23, 34, 33, 35, 22, 21, 22, 22, 22, 24],
-            [23, 23, 34, 21, 35, 22, 21, 22, 44, 22, 24],
-            [23, 23, 34, 18, 35, 22, 21, 22, 38, 22, 24],
-            [23, 23, 34, 37, 35, 22, 32, 22, 30, 22, 24]
-        ],
-        agesAvg: [25, 23, 22, 28, 31],
-        quotasAvg: [5.4, 4.5, 5.1, 6.1, 5.7]
+        names: [],
+        ages: [],
+        agesAvg: [],
+        quotas: [],
+        quotasAvg: [],
+        genderPctM: [],
+        genderPctF: []
     }
 }
+
+
+
+
+
+
+
+
+
+//////// START__CHARTJS ////////
 
 Chart.register(ChartDataLabels)
 
@@ -44,16 +46,16 @@ Chart.register(ChartDataLabels)
 let genderChart = new Chart(genderChartElement, {
     type: 'bar',
     data: {
-        labels: exampleData.educations.names,
+        labels: [],
         datasets: [
             {
                 label: 'Mand',
-                data: exampleData.educations.genders.male,
+                data: [],
                 backgroundColor: '#36a2eb',
             },
             {
                 label: 'Kvinde',
-                data: exampleData.educations.genders.female,
+                data: [],
                 backgroundColor: '#ff6384',
             }
         ]
@@ -92,120 +94,90 @@ let genderChart = new Chart(genderChartElement, {
     }
 });
 
-genderChart.update()
 
-
-let ageChart = new Chart(ageChartElement, {
-    type: 'boxplot',
+let comboChart = new Chart(comboChartElement, {
     data: {
-        // Labels for the X-axis
-        labels: exampleData.educations.names,
-        datasets: [{
-            label: 'Alder i uddannelser',
-            data: exampleData.educations.ages,
-            backgroundColor: 'rgba(104, 99, 255, 0.5)',
-            borderColor: 'rgba(99, 138, 255, 1)',
-            borderWidth: 1,
-            outlierColor: '#999999',
-            outlierOpacity: 1,
-            meanRadius: 10,                 // Make it big enough to see
-            meanBackgroundColor: 'red', // High contrast color
-            meanBorderColor: 'black',      // Sharp border
-            meanBorderWidth: 1,
-            padding: 10
-        }]
+        labels: [],
+        datasets: [
+            // --- DATASET 1: VISUALS (Box + Red Dot) ---
+            {
+                type: 'boxplot',
+                label: '',
+                data: [],
+                backgroundColor: 'rgba(104, 99, 255, 0.5)',
+                borderColor: 'rgba(99, 138, 255, 1)',
+                borderWidth: 1,
+                outlierColor: '#999999',
+                outlierOpacity: 1,
+
+                // Keep the Red Dot here
+                meanRadius: 10,
+                meanBackgroundColor: 'red',
+                meanBorderColor: 'black',
+                meanBorderWidth: 1,
+                padding: 10,
+
+                // DISABLE labels for the box itself
+                datalabels: {
+                    display: false
+                }
+            },
+
+            // --- DATASET 2: LABELS (Hidden Line Anchors) ---
+            {
+                type: 'line',
+                label: 'Average Label',
+                data: [], // Use the averages array directly here
+
+                // Make the actual graph invisible
+                borderColor: 'red',
+                backgroundColor: 'transparent',
+                pointRadius: 5,
+                pointHoverRadius: 0,
+
+                // Configure labels specifically for this "Ghost" dataset
+                datalabels: {
+                    display: true,
+                    align: 'top',     // Push text UP from the anchor
+                    anchor: 'center', // Lock anchor to the exact data point (the average)
+                    offset: -25,       // Space between the invisible point (center of red dot) and text
+
+                    // Simple formatter: 'value' is already the average now
+                    formatter: function (value) {
+                        return `Avg: ${value}`;
+                    },
+
+                    color: 'black',
+                    font: {
+                        weight: 'bold'
+                    }
+                }
+            }
+        ]
     },
     options: {
         responsive: true,
         plugins: {
             title: {
                 display: true,
-                text: 'Chart.js Box Plot Example'
+                text: ''
             },
             tooltip: {
-                // The plugin has its own tooltip logic built-in
                 mode: 'index',
-                intersect: false
+                intersect: true,
+                // Optional: Hide the tooltip for the ghost line if you want
+                filter: function (tooltipItem) {
+                    return tooltipItem.datasetIndex === 0;
+                }
             },
-            datalabels: {
-                display: true,
-
-                formatter: function (value, context) {
-                    // context.dataIndex is 0, 1, 2...
-                    const ageAvg = exampleData.educations.agesAvg[context.dataIndex]
-                    console.log(value);
-
-
-                    return `Avg: ${ageAvg}`;
-                },
-
-                // Optional: Styling to position the label nicely
-                color: 'black',
-                font: {
-                    weight: 'bold'
-                },
-                anchor: 'center', // Position anchor at the top of the box/whisker
-                align: 'center',  // Move the text up away from the anchor
-                offset: 0      // Add a little pixel spacing
+            legend: {
+                display: false
             }
+            // Note: Global datalabels config is removed; we handled it per-dataset above
         }
     }
 });
 
-ageChart.update()
-
-
-
-let quotaChart = new Chart(quotaChartElement, {
-    type: 'bar',
-    data: {
-        // Labels for the X-axis
-        labels: exampleData.educations.names,
-        datasets: [{
-            label: 'Kvotienter i uddannelser',
-            data: exampleData.educations.quotasAvg,
-            backgroundColor: 'rgba(104, 99, 255, 0.5)',
-            borderColor: 'rgba(99, 138, 255, 1)',
-            borderWidth: 1,
-            padding: 10
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            title: {
-                display: true,
-                text: 'Kvotienter i uddannelser'
-            },
-            tooltip: {
-                // The plugin has its own tooltip logic built-in
-                mode: 'index',
-                intersect: false
-            },
-            datalabels: {
-                display: true,
-
-                formatter: function (value, context) {
-                    // context.dataIndex is 0, 1, 2...
-                    const ageAvg = exampleData.educations.agesAvg[context.dataIndex]
-                    console.log(value);
-
-
-                    return `Avg: ${ageAvg}`;
-                },
-
-                // Optional: Styling to position the label nicely
-                color: 'black',
-                font: {
-                    weight: 'bold'
-                },
-                anchor: 'end', // Position anchor at the top of the box/whisker
-                align: 'top',  // Move the text up away from the anchor
-                offset: 4      // Add a little pixel spacing
-            }
-        }
-    }
-});
 
 
 //////// END__CHARTJS ////////
@@ -422,29 +394,12 @@ function mapMunicipalitiesFromDataset(datasetToVisualize) {
 mapMunicipalitiesFromDataset(EKdataset)
 
 
-function getMunicipalityNames(dataset) {
-    const municipalities = [];
-
-    for (const municipality of dataset.features) {
-        const municipalityName = municipality.properties.label_dk;
-
-        // 1. Check if name exists (is not null/undefined)
-        // 2. Check if the array does NOT (!) include the name yet
-        if (municipalityName && !municipalities.includes(municipalityName)) {
-            municipalities.push(municipalityName);
-        }
-    }
-
-    console.log("Unique Municipalities:", municipalities);
-}
-
 
 //////// END__LEAFLET ////////
 //////// START__QUERIES ////////
 
 // Får average for køn, alder og kvotient
 function getAllAvg() {
-
     const pipeline = [
         {
             // Stage 1: Calculate raw sums and averages
@@ -498,9 +453,12 @@ function getAllAvg() {
         const resultObj = result[0].general;
 
         console.log(resultObj);
+        
     }
 }
 //getAllAvg()
+
+
 
 // Får average for uddannelser med brug af køn, alder og kvotient
 function getAvgForEducation() {
@@ -536,8 +494,8 @@ function getAvgForEducation() {
                 avgAge: {$round: ["$avgAge", 0]},
                 avgQuota: {$round: ["$avgQuota", 1]},
                 // Calculate %
-                pctM: {$round: [{$multiply: [{$divide: ["$countM", "$totalCount"]}, 100]}, 0]},
-                pctF: {$round: [{$multiply: [{$divide: ["$countF", "$totalCount"]}, 100]}, 0]}
+                pctM: {$round: [{$multiply: [{$divide: ["$countM", "$totalCount"]}, 100]}, 1]},
+                pctF: {$round: [{$multiply: [{$divide: ["$countF", "$totalCount"]}, 100]}, 1]}
             }
         },
         {
@@ -564,21 +522,6 @@ function getAvgForEducation() {
                 genderPctM: {$push: "$pctM"},
                 genderPctF: {$push: "$pctF"}
             }
-        },
-        {
-            // STAGE 5: Final wrapper to match your key structure
-            $project: {
-                _id: 0,
-                educations: {
-                    names: "$names",
-                    ages: "$ages",
-                    agesAvg: "$agesAvg",
-                    quotas: "$quotas",
-                    quotasAvg: "$quotasAvg",
-                    genderPctM: "$genderPctM",
-                    genderPctF: "$genderPctF"
-                }
-            }
         }
     ];
 
@@ -587,14 +530,71 @@ function getAvgForEducation() {
     const result = queryResult.all ? queryResult.all() : queryResult;
 
     if (result.length > 0) {
-        const resultObj = result[0].educations;
+        const resultObj = result[0];
 
         console.log(resultObj);
+
+        queriedData.educations.names = resultObj.names
+        queriedData.educations.ages = resultObj.ages
+        queriedData.educations.agesAvg = resultObj.agesAvg
+        queriedData.educations.quotas = resultObj.quotas
+        queriedData.educations.quotasAvg = resultObj.quotasAvg
+        queriedData.educations.genderPctM = resultObj.genderPctM
+        queriedData.educations.genderPctF = resultObj.genderPctF
     }
 }
 getAvgForEducation()
 
 //////// END__QUERIES ////////
+//////// START__FUNCTIONS ////////
+
+
+function showGenders() {
+    genderChart.data.datasets[0].data = queriedData.educations.genderPctM
+    genderChart.data.datasets[1].data = queriedData.educations.genderPctF
+    genderChart.data.labels = queriedData.educations.names
+
+    genderChart.update()
+
+}
+
+showGenders()
+
+
+function showAgeCharts() {
+    comboChart.data.datasets[0].data = queriedData.educations.ages
+    comboChart.data.datasets[1].data = queriedData.educations.agesAvg
+    comboChart.data.labels = queriedData.educations.names
+    comboChart.options.plugins.title.text = 'Aldre på uddannelser'
+    
+
+    comboChart.update()
+}
+showAgeCharts()
+
+
+function showQuotaCharts() {
+    comboChart.data.datasets[0].data = queriedData.educations.quotas
+    comboChart.data.datasets[1].data = queriedData.educations.quotasAvg
+    comboChart.data.labels = queriedData.educations.names
+    comboChart.options.plugins.title.text = 'Kvotienter på uddannelser'
+
+
+    comboChart.update()
+}
+showQuotaCharts()
+
+
+function showSelectedOnMap(selectedEducation) {
+    
+}
+
+
+
+
+//////// END__FUNCTIONS ////////
+
+
 //////// START__EVENTLISTENERS ////////
 
 
