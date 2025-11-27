@@ -1,5 +1,4 @@
 // DOM
-const testField = document.querySelector("#testField");
 const genderChartElement = document.querySelector("#genderChart")
 const comboChartElement = document.querySelector("#comboChart")
 
@@ -102,20 +101,14 @@ let comboChart = new Chart(comboChartElement, {
             // --- DATASET 1: VISUALS (Box + Red Dot) ---
             {
                 type: 'boxplot',
-                label: '',
+                label: 'Boxplot',
                 data: [],
                 backgroundColor: 'rgba(104, 99, 255, 0.5)',
                 borderColor: 'rgba(99, 138, 255, 1)',
                 borderWidth: 1,
                 outlierColor: '#999999',
-                outlierOpacity: 1,
 
-                // Keep the Red Dot here
-                meanRadius: 10,
-                meanBackgroundColor: 'red',
-                meanBorderColor: 'black',
-                meanBorderWidth: 1,
-                padding: 10,
+                order: 10,
 
                 // DISABLE labels for the box itself
                 datalabels: {
@@ -126,7 +119,7 @@ let comboChart = new Chart(comboChartElement, {
             // --- DATASET 2: LABELS (Hidden Line Anchors) ---
             {
                 type: 'line',
-                label: 'Average Label',
+                label: 'Gennemsnit',
                 data: [], // Use the averages array directly here
 
                 // Make the actual graph invisible
@@ -135,19 +128,16 @@ let comboChart = new Chart(comboChartElement, {
                 pointRadius: 5,
                 pointHoverRadius: 0,
 
+                order: 0,
+
                 // Configure labels specifically for this "Ghost" dataset
                 datalabels: {
                     display: true,
                     align: 'top',     // Push text UP from the anchor
                     anchor: 'center', // Lock anchor to the exact data point (the average)
-                    offset: -25,       // Space between the invisible point (center of red dot) and text
+                    offset: 0,       // Space between the invisible point (center of red dot) and text
 
-                    // Simple formatter: 'value' is already the average now
-                    formatter: function (value) {
-                        return `Avg: ${value}`;
-                    },
-
-                    color: 'black',
+                    color: 'red',
                     font: {
                         weight: 'bold'
                     }
@@ -171,9 +161,8 @@ let comboChart = new Chart(comboChartElement, {
                 }
             },
             legend: {
-                display: false
+                display: true
             }
-            // Note: Global datalabels config is removed; we handled it per-dataset above
         }
     }
 });
@@ -564,7 +553,7 @@ function showQuotaCharts() {
 
     comboChart.update()
 }
-showQuotaCharts()
+//showQuotaCharts()
 
 
 
