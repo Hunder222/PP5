@@ -9,36 +9,44 @@
 </head>
 
 <div class="menu">
-  <label for="uddannelse"> vælg uddannelse</label>
-    <select name="uddannelse" id="uddannelse">
+    <label for="uddannelse-input" id="tekstud"></label>
+    <input type="search" id="uddannelse-input" name="uddannelse" placeholder="Søg efter uddannelse..." list="uddannelse.list">
+<label>
+<input type="checkbox" name="chekbox" value="køn" >
+</label>
+    <label>
+        <input type="checkbox" name="chekbox" value="køn">
+    </label>
+    <label>
+    <input type="checkbox" name="chekbox" value="køn">
 
-        <option value="Alle uddannelser" selected> Alle uddannelser</option>
-        <option value="au-installatoer-i-vvs">AU Installatør i vvs</option>
-        <option value="automationsteknolog">Automationsteknolog</option>
-        <option value="byggekoordinator-ak">Byggekoordinator AK</option>
-        <option value="bygningskonstruktoer">Bygningskonstruktør</option>
-        <option value="datamatiker">Datamatiker</option>
-        <option value="designteknolog">Designteknolog</option>
-        <option value="digital-konceptudvikling">Digital konceptudvikling</option>
-        <option value="e-designer-ak">E-designer AK</option>
-        <option value="energiteknolog">Energiteknolog</option>
-        <option value="it-teknolog">IT-teknolog</option>
-        <option value="kort-og-landmaalingstekniker-2019">Kort- og landmålingstekniker 2019</option>
-        <option value="multimediedesigner">Multimediedesigner</option>
-        <option value="oekonomi-og-it">Økonomi og it</option>
-        <option value="optometri">Optometri</option>
-        <option value="pb-i-energimanagement">PB i Energimanagement</option>
-        <option value="pb-i-it-arkitektur">PB i IT-arkitektur</option>
-        <option value="pb-i-it-sikkerhed">PB i IT-sikkerhed</option>
-        <option value="pb-i-softwareudvikling">PB i Softwareudvikling</option>
-        <option value="pb-i-webudvikling">PB i Webudvikling</option>
-        <option value="pb-inden-for-design-og-business">PB inden for Design og business</option>
-        <option value="produktionsteknolog">Produktionsteknolog</option>
-        <option value="produktudvikling-og-teknisk-integration">Produktudvikling og teknisk integration</option>
-        <option value="smykker-teknologi-og-business">Smykker, teknologi og business</option>
-    </select>
-
-
+</label>
+    <datalist id="uddannelse.list">
+        <option value="Alle uddannelser"></option>
+        <option value="AU Installatør i vvs"></option>
+        <option value="Automationsteknolog"></option>
+        <option value="Byggekoordinator AK"></option>
+        <option value="Bygningskonstruktør"></option>
+        <option value="Datamatiker"></option>
+        <option value="Designteknolog"></option>
+        <option value="Digital konceptudvikling"></option>
+        <option value="E-designer AK"></option>
+        <option value="Energiteknolog"></option>
+        <option value="IT-teknolog"></option>
+        <option value="Kort- og landmålingstekniker 2019"></option>
+        <option value="Multimediedesigner"></option>
+        <option value="Økonomi og it"></option>
+        <option value="Optometri"></option>
+        <option value="PB i Energimanagement"></option>
+        <option value="PB i IT-arkitektur"></option>
+        <option value="PB i IT-sikkerhed"></option>
+        <option value="PB i Softwareudvikling"></option>
+        <option value="PB i Webudvikling"></option>
+        <option value="PB inden for Design og business"></option>
+        <option value="Produktionsteknolog"></option>
+        <option value="Produktudvikling og teknisk integration"></option>
+        <option value="Smykker, teknologi og business"></option>
+    </datalist>
 
 
 </div>

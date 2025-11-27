@@ -16,7 +16,7 @@ html,body {
 
 
     grid-template-columns: auto auto auto;
-    background-color: dodgerblue;
+        background-color: dodgerblue;
 
     margin-top: 10vh;
 margin-left: 58vw;
@@ -31,10 +31,17 @@ height: 60vh;
 
 }
 
-.menu{
+#uddannelse-input{
    display: grid;
     width: 20vw;
     margin-left: 78vw;
-    height: 5vh;
+    height: 4vh;
+color: black;
+    background-color: beige;}
 
+#tekstud{
+    display: grid;
+    margin-left: 78vw;
+    margin-top: 2vh;
 }
+
