@@ -8,14 +8,34 @@
 </head>
 <body>
 <div id="chartContainer" class="container">
-    <div id="statsborgerskab" class="chart1"></div>
-    <div id="studieretning" claas="chart2"></div>
-    <div id="førstePrioritet" class="chart3"></div>
-    <div id="heatMap" class="chart4"></div>
+
+    <div class="højreCharts">
+        <div id="statsborgerskabContainer" class="chart1">
+            <canvas id="statsborgerskab"></canvas>
+        </div>
+
+        <div id="heatMapContainer" class="chart2">
+            <canvas id="heatMap"></canvas>
+        </div>
+    </div>
+
+    <div class="venstreCharts">
+        <div id="studieretningContainer" class="chart3">
+            <canvas id="studieretning"></canvas>
+        </div>
+
+        <div id="førstePrioritetContainer" class="chart4">
+            <canvas id="førstePrioritet"></canvas>
+        </div>
+    </div>
 </div>
 
-
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<script src="https://unpkg.com/@sgratzl/chartjs-chart-boxplot@4"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/mingo/dist/mingo.min.js"></script>
+<script src="data.js"></script>
 <script src="client_admin.js"></script>
 </body>
 </html>
