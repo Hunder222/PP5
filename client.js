@@ -184,70 +184,56 @@ let comboChart = new Chart(comboChartElement, {
 //////// START___LEAFLET ////////
 
 
-// map init and propertiees
-var map = L.map('leafletMapDK').setView([56.2, 10.5], 7);
+// ==========================================
+// 1. SETUP MAP & GLOBALS
+// ==========================================
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap'
-})//.addTo(map);
+let map = L.map('leafletMapDK').setView([56.2, 10.5], 7);
+let currentGeoJsonLayer = null; // We store the active layer here
+let cachedGeoJsonData = null;   // We store the raw map data here so we don't fetch it twice
 
-// CartoDB Voyager (No maritime borders, cleaner look)
+// Base Layers
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
     subdomains: 'abcd',
     maxZoom: 20
 }).addTo(map);
 
+// Add Schools ONCE (Use a pane or high z-index to keep them on top)
+// We create a specific pane for markers so they always stay above polygons
+map.createPane('markersPane');
+map.getPane('markersPane').style.zIndex = 650;
+mapEkSchools();
 
-// add EK schools to map
+
+// ==========================================
+// 2. HELPER FUNCTIONS
+// ==========================================
+
 function mapEkSchools() {
     const EKschools = [
-        {
-            name: "EK Guldbergsgade",
-            latlng: [55.69149690984243, 12.555008402914718]
-        },
-        {
-            name: "EK Landemærket",
-            latlng: [55.68202742413432, 12.576277748303877]
-        },
-        {
-            name: "EK Lygten",
-            latlng: [55.706369426829156, 12.539137981532795]
-        },
-        {
-            name: "EK Nansensgade",
-            latlng: [55.68192028780662, 12.562680082210507]
-        },
-        {
-            name: "EK Prinsesse Charlottes Gade",
-            latlng: [55.6944551895993, 12.550846762451158]
-        }
-    ]
+        { name: "EK Guldbergsgade", latlng: [55.69149690984243, 12.555008402914718] },
+        { name: "EK Landemærket", latlng: [55.68202742413432, 12.576277748303877] },
+        { name: "EK Lygten", latlng: [55.706369426829156, 12.539137981532795] },
+        { name: "EK Nansensgade", latlng: [55.68192028780662, 12.562680082210507] },
+        { name: "EK Prinsesse Charlottes Gade", latlng: [55.6944551895993, 12.550846762451158] }
+    ];
 
     EKschools.forEach(school => {
         L.circle(school.latlng, {
-            color: "white", // stroke color
-            opacity: 0.5, // stroke opacity
-            fillColor: 'blue', // fill color
-            fillOpacity: 0.3, // fill opacity
-            radius: 250 // radius in meters 
-        }).bindTooltip(
-            `<b>${school.name}</b>`
-        ).addTo(map);
+            color: "white", opacity: 0.5,
+            fillColor: 'blue', fillOpacity: 0.3, radius: 250,
+            pane: 'markersPane' // distinct pane to stay on top
+        }).bindTooltip(`<b>${school.name}</b>`).addTo(map);
     });
 }
 
-
-// Build a lookup map from City -> Municipality
 function createCityLookup(municipalityData) {
     const lookup = new Map();
-
     municipalityData.forEach(entry => {
         const kommune = entry.Kommune;
         if (entry.Byer && Array.isArray(entry.Byer)) {
             entry.Byer.forEach(city => {
-                // Store lowercase for case-insensitive matching
                 lookup.set(city.trim().toLowerCase(), kommune);
             });
         }
@@ -255,143 +241,111 @@ function createCityLookup(municipalityData) {
     return lookup;
 }
 
-
-// Process the dataset to get counts per municipality
 function calculateMunicipalityStats(userEntries, municipalityMappingJson) {
     const cityToMunicipality = createCityLookup(municipalityMappingJson);
     const counts = {};
     let maxCount = 0;
 
-    // Initialize counts for all known municipalities to 0 (optional, but good for completeness)
-    municipalityMappingJson.forEach(m => {
-        counts[m.Kommune] = 0;
-    });
+    municipalityMappingJson.forEach(m => counts[m.Kommune] = 0);
 
-    // Iterate through the user dataset
     for (const entry of userEntries) {
         const cityRaw = entry["Bopæl_POSTDISTRIKT"];
-
-        if (!cityRaw) continue; // Skip empty entries
-
+        if (!cityRaw) continue;
         const cityClean = cityRaw.trim().toLowerCase();
-
-        // Find which municipality this city belongs to
         const municipalityName = cityToMunicipality.get(cityClean);
 
         if (municipalityName) {
             counts[municipalityName] = (counts[municipalityName] || 0) + 1;
-
-            // Keep track of the highest number for the color scale
             if (counts[municipalityName] > maxCount) {
                 maxCount = counts[municipalityName];
             }
         }
     }
+    return { counts, maxCount };
+}
 
-    return {counts, maxCount};
+function getHeatmapColor(count, max) {
+    if (count === 0) return 'rgba(12,12,12,0.05)';
+    const intensity = count / max;
+    const opacity = 0.1 + (intensity * 0.7);
+    return `rgba(220, 20, 60, ${opacity})`;
 }
 
 
-// 3. Color Generator Function
-function getHeatmapColor(count, max) {
-    // 1. GREY for zero entries
-    if (count === 0) {
-        return 'rgba(12,12,12,0.05)'; // Light Grey
+// ==========================================
+// 3. MAIN UPDATE FUNCTION
+// ==========================================
+
+function createMapFromDataset(datasetToVisualize) {
+    // 1. Check if we have the raw GeoJSON data yet.
+    if (!cachedGeoJsonData) {
+        console.log("Fetching GeoJSON for the first time...");
+        fetch('https://raw.githubusercontent.com/magnuslarsen/geoJSON-Danish-municipalities/master/municipalities/municipalities.geojson')
+            .then(r => r.json())
+            .then(data => {
+                cachedGeoJsonData = data; // Store it!
+                // Recursive call: Now that we have data, run the function again
+                createMapFromDataset(datasetToVisualize);
+            })
+            .catch(err => console.error("Error loading GeoJSON:", err));
+        return; // Stop here, wait for fetch to finish
     }
 
-    // 2. Heatmap Scale (White -> Red)
-    // Calculate intensity (0.0 to 1.0)
-    const intensity = count / max;
-    // We scale opacity from 0.3 to 1.0 based on intensity
+    // 2. If a layer already exists, REMOVE it to clear the map
+    if (currentGeoJsonLayer) {
+        map.removeLayer(currentGeoJsonLayer);
+    }
 
-    const opacity = 0.1 + (intensity * 0.7);
-    return `rgba(220, 20, 60, ${opacity})`; // Crimson Red with calculated opacity
-}
+    console.log("Processing stats and updating map...");
 
+    // 3. Process Stats (Assuming 'kommuneDataset' is available globally, 
+    // otherwise pass it as an argument too)
+    const { counts } = calculateMunicipalityStats(datasetToVisualize, kommuneDataset);
 
-function mapMunicipalitiesFromDataset(datasetToVisualize) {
-    // Fetch ALL necessary data
-    fetch('https://raw.githubusercontent.com/magnuslarsen/geoJSON-Danish-municipalities/master/municipalities/municipalities.geojson')
-        .then(r => r.json())
-        .then(geoJsonData => {
+    // Recalculate Max
+    let adjustedMaxCount = 0;
+    Object.entries(counts).forEach(([name, count]) => {
+        if (name !== 'København' && name !== 'Frederiksberg') {
+            if (count > adjustedMaxCount) adjustedMaxCount = count;
+        }
+    });
 
-            console.log("GeoJSON loaded. Processing stats...");
+    // 4. Create the new Layer
+    function heatmapStyle(feature) {
+        const muniName = feature.properties.label_dk;
+        const count = counts[muniName] || 0;
 
-            // 4. Calculate Stats using the helper function above
-            const {counts} = calculateMunicipalityStats(datasetToVisualize, kommuneDataset);
+        if (muniName === 'København') {
+            return { fillColor: '#4B0082', weight: 1, color: 'white', fillOpacity: 0.6 };
+        } else if (muniName === 'Frederiksberg') {
+            return { fillColor: '#4B0082', weight: 1, color: 'white', fillOpacity: 0.4 };
+        }
+        return {
+            fillColor: getHeatmapColor(count, adjustedMaxCount),
+            weight: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.8
+        };
+    }
 
-            // Recalculate Max Count EXCLUDING "København" AND "Frederiksberg"
-            let adjustedMaxCount = 0;
-            Object.entries(counts).forEach(([name, count]) => {
-                if (name !== 'København' && name !== 'Frederiksberg') {
-                    if (count > adjustedMaxCount) adjustedMaxCount = count;
-                }
-            });
+    currentGeoJsonLayer = L.geoJSON(cachedGeoJsonData, {
+        style: heatmapStyle,
+        onEachFeature: function (feature, layer) {
+            const muniName = feature.properties.label_dk;
+            const count = counts[muniName] || 0;
+            layer.bindTooltip(`<strong>${muniName}</strong><br>${count} Optagelser`);
+        }
+    });
 
-            console.log("Max applications (excluding top 2):", adjustedMaxCount);
-
-            // 5. Define Style Function (using the calculated counts)
-            function heatmapStyle(feature) {
-                // Get the name from the GeoJSON property
-                const muniName = feature.properties.label_dk;
-
-                // Get the count we calculated (default to 0 if not found)
-                const count = counts[muniName] || 0;
-
-                // Data color scheme outliers
-                if (muniName === 'København') {
-                    return {
-                        fillColor: '#4B0082',
-                        weight: 1,
-                        opacity: 1,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.6
-                    };
-                } else if (muniName === 'Frederiksberg') {
-                    return {
-                        fillColor: '#4B0082',
-                        weight: 1,
-                        opacity: 1,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.4
-                    };
-                }
-
-                return {
-                    fillColor: getHeatmapColor(count, adjustedMaxCount),
-                    weight: 1,
-                    opacity: 1,
-                    color: 'white',
-                    dashArray: '3',
-                    fillOpacity: 0.8
-                };
-            }
-
-            // 6. Add GeoJSON layer to map
-            L.geoJSON(geoJsonData, {
-                style: heatmapStyle,
-                onEachFeature: function (feature, layer) {
-                    const muniName = feature.properties.label_dk;
-                    const count = counts[muniName] || 0;
-
-                    // Add a popup with the municipality name and count
-                    layer.bindTooltip(`<strong>${muniName}</strong><br>${count} Optagelser`);
-                }
-            }).addTo(map);
-
-            // 7 called last to draw schools on top of municipality zones
-            mapEkSchools()
-        })
-        .catch(err => {
-            console.error("Error loading GeoJSON:", err);
-        });
+    // 5. Add to map and push to back so Schools stay on top
+    currentGeoJsonLayer.addTo(map);
+    currentGeoJsonLayer.bringToBack();
 }
 
 
 // maps the municipalities from a dataset. can be used with a filteted dataset.
-mapMunicipalitiesFromDataset(EKdataset)
+createMapFromDataset(EKdataset)
 
 
 
@@ -544,7 +498,7 @@ function getAvgForEducation() {
         queriedData.educations.genderPctF = resultObj.genderPctF
     }
 }
-//getAvgForEducation()
+getAvgForEducation()
 
 
 // Finder alt data indenfor en givet uddannelse
@@ -557,28 +511,6 @@ function getStatsForEducation (uddannelse) {
             $match: {
                 "INSTITUTIONSAKT_BETEGNELSE": uddannelse
             }
-        },
-        {
-            // STAGE 2: Gruppér og beregn nøgletal (fra din tidligere pipeline)
-            $group: {
-                _id: null,
-                avgAge: {$avg: "$Alder"},
-                avgQuota: {$avg: "$KVOTIENT"},
-                totalCount: {$sum: 1},
-                countM: {$sum: {$cond: [{$eq: ["$Køn", "Mand"]}, 1, 0]}},
-                countF: {$sum: {$cond: [{$eq: ["$Køn", "Kvinde"]}, 1, 0]}}
-            }
-        },
-        {
-            // STAGE 3: Formater og udregn procenter
-            $project: {
-                _id: 0,
-                education: uddannelse, // Tilføj navnet til output
-                avgAge: {$round: ["$avgAge", 0]},
-                avgQuota: {$round: ["$avgQuota", 1]},
-                genderpctM: {$round: [{$multiply: [{$divide: ["$countM", "$totalCount"]}, 100]}, 0]},
-                genderpctF: {$round: [{$multiply: [{$divide: ["$countF", "$totalCount"]}, 100]}, 0]}
-            }
         }
     ];
 
@@ -586,9 +518,13 @@ function getStatsForEducation (uddannelse) {
     const results = queryResult.all ? queryResult.all() : queryResult;
 
     // Returnerer det aggregerede objekt, eller null hvis ingen data
-    console.log(results.length > 0 ? results[0] : null);
+    console.log(results.length > 0 ? results : null);
+    console.log(results.length);
+
+
+    createMapFromDataset(results)
 }
-//getStatsForEducation("PB i IT-arkitektur")
+//getStatsForEducation("Datamatiker")
 
 
 //////// END__QUERIES ////////
@@ -630,10 +566,6 @@ function showQuotaCharts() {
 }
 showQuotaCharts()
 
-
-function showSelectedOnMap(selectedEducation) {
-    
-}
 
 
 
