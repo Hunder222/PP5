@@ -2,25 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Porteføljeopgave 5 (Charts)</title>
+    <title>Ek data - åbent hus</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
+<body>
 
-<div class="menu">
-    <label for="uddannelse-input" id="tekstud"></label>
-    <input type="search" id="uddannelse-input" name="uddannelse" placeholder="Søg efter uddannelse..." list="uddannelse.list">
-<label>
-<input type="checkbox" name="chekbox" value="køn" >
-</label>
-    <label>
-        <input type="checkbox" name="chekbox" value="køn">
-    </label>
-    <label>
-    <input type="checkbox" name="chekbox" value="køn">
+    <div>
+        <input type="radio" id="kvotient" name="kvotient"  checked>
+        <label for="kvotient">kvotient</label>
+    </div>
 
-</label>
+    <div>
+        <input type="radio" id="Alder" name="kvotient" >
+        <label for="alder">alder</label>
+    </div>
+
+    <div class="menu">
+        <label for="uddannelse-input" id="tekstud"></label>
+        <input type="search" id="uddannelse-input" name="uddannelse" placeholder="Søg efter uddannelse..." list="uddannelse.list">
+        <div id="radio">
+        </div>
+
     <datalist id="uddannelse.list">
         <option value="Alle uddannelser"></option>
         <option value="AU Installatør i vvs"></option>
@@ -48,37 +52,37 @@
         <option value="Smykker, teknologi og business"></option>
     </datalist>
 
-
 </div>
-<body>
-    <ul id="testField"></ul>
-    
-    <canvas id="comboChart"></canvas>
-    
+
+   <div class="test 1">
+
+       <canvas id="comboChart"></canvas>
+
+
+
+
+
+   </div>
+
+
+
+<div class="test2">
+
     <canvas id="genderChart"></canvas>
 
-    <div id="leafletMapDK"></div>
 
-
-    
-<div class="box1">
     <div id="leafletMapDK">
 
     </div>
 </div>
-<div class="box2">
 
-
-
-</div>
-
-
-    <div class="box3">
+    
 
 
 
 
-    </div>
+
+
 </body>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>

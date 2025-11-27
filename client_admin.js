@@ -340,62 +340,15 @@ createMapFromDataset(EKdataset)
 function getCountFromDenmarkOrAbroad() {
     const pipeline = [
         {
-            $facet: {
-                // FACET 1: Summary (Denmark vs Abroad)
-                "Samlet_statsborgerskab": [
-                    {
-                        $group: {
-                            _id: {
-                                $cond: {
-                                    if: { $eq: ["$Statsborgerskab", "Danmark"] },
-                                    then: "Danmark",
-                                    else: "Udlandet"
-                                }
-                            },
-                            Total: { $sum: 1 }
-                        }
-                    },
-                    // -- New formatting stages --
-                    {
-                        $group: {
-                            _id: null,
-                            names: { $push: "$_id" },
-                            counts: { $push: "$Total" }
-                        }
-                    },
-                    {
-                        $project: { _id: 0, names: 1, counts: 1 }
+            $group: {
+                _id: {
+                    $cond: {
+                        if: {$eq: ["$Statsborgerskab", "Danmark"]},
+                        then: "Danmark",
+                        else: "Udlandet"
                     }
-                ],
-
-                // FACET 2: Detailed (Specific Foreign Countries)
-                "Udenlandsk_statsborgerskab": [
-                    {
-                        $match: {
-                            Statsborgerskab: { $ne: "Danmark" }
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: "$Statsborgerskab",
-                            Total: { $sum: 1 }
-                        }
-                    },
-                    {
-                        $sort: { Total: -1 }
-                    },
-                    // -- New formatting stages --
-                    {
-                        $group: {
-                            _id: null,
-                            names: { $push: "$_id" },
-                            counts: { $push: "$Total" }
-                        }
-                    },
-                    {
-                        $project: { _id: 0, names: 1, counts: 1 }
-                    }
-                ]
+                },
+                Total: {$sum: 1}
             }
         }
     ];

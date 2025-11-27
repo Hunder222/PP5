@@ -1,7 +1,16 @@
 // DOM
 const genderChartElement = document.querySelector("#genderChart")
 const comboChartElement = document.querySelector("#comboChart")
+const hej = document.querySelector("#kvotient")
+hej.addEventListener("click",()=>{
+  console.log("hej")
 
+})
+
+const uddannelseInput= document.querySelector("#uddannelse-input")
+uddannelseInput.addEventListener("input",()=>{
+    console.log(uddannelseInput.value)
+})
 
 console.log(EKdataset[0]);
 
