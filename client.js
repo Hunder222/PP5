@@ -8,6 +8,91 @@ console.log(EKdataset[0]);
 //////// START__CHARTJS ////////
 
 
+const exampleData = {
+    averageQuota: 5.5,
+    AvgQuotaM: 5.1,
+    AvgQuotaF: 5.9,
+    genders: {
+        male:   [57, 51, 61, 59, 55],
+        female: [43, 49, 39, 41, 45]
+    }
+}
+
+
+const chartCanvas = document.querySelector("#chartCanvas")
+
+//Chart.register(ChartDataLabels);
+
+console.log(exampleData.genders.male);
+
+Chart.register(ChartDataLabels)
+let barChart = new Chart(chartCanvas, {
+    type: 'bar',
+    data: {
+        labels: ['1','2','3','4','5'],
+        datasets: [
+            {
+                label: 'Mand',
+
+                data: exampleData.genders.male,
+                backgroundColor: '#36a2eb',
+            },
+            {
+                label: 'Kvinde',
+
+                data: exampleData.genders.female,
+                backgroundColor: '#ff6384',
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            // 1. Clean up the Tooltip (the box when you hover)
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        // Round to 1 decimal place for the tooltip
+                        let value = context.raw;
+                        return context.dataset.label + ": " + value.toFixed(1) + "%";
+                    }
+                }
+            },
+            // 2. Clean up the Labels (the text on the bar)
+            datalabels: {
+                color: 'white',
+                font: { weight: 'bold' },
+                // Round to 1 decimal place, e.g., "33.3%"
+                formatter: (value) => {
+                    return value.toFixed(1) + '%';
+                }
+            }
+        },
+        scales: {
+            x: { stacked: true },
+            y: {
+                stacked: true,
+                min: 0,
+                // 3. Graceful Max Limit
+                // We do NOT set 'max: 100' here.
+                // Why? If floating point math makes the total 100.00001,
+                // 'max: 100' might cut the top pixel off.
+                // Instead, we let Chart.js auto-scale, or set it to slightly over 100 just in case.
+                suggestedMax: 100,
+            }
+        }
+    }
+});
+
+barChart.update()
+
+
+
+
+
+
+
+
 //////// END__CHARTJS ////////
 //////// START___LEAFLET ////////
 
@@ -18,7 +103,15 @@ var map = L.map('leafletMapDK').setView([56.2, 10.5], 7);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap'
+})//.addTo(map);
+
+// CartoDB Voyager (No maritime borders, cleaner look)
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
 }).addTo(map);
+
 
 
 // add EK schools to map
@@ -235,7 +328,8 @@ function getMunicipalityNames(dataset) {
 //////// END__LEAFLET ////////
 //////// START__QUERIES ////////
 
-//////// Avg kvotient ////////
+
+// Avg kvotient 
 function getAvgQuota() {
     const pipeline = [
         {
@@ -252,10 +346,10 @@ function getAvgQuota() {
     console.log(result);
     //logs 6.42
 }
-
 //getAvgQuota()
 
-//////// Avg kvotient m. køn ////////
+
+// Avg kvotient m. køn
 function getQuotaGender(gender) {
     const pipeline = [
         {
@@ -280,7 +374,8 @@ function getQuotaGender(gender) {
 }
 //getQuotaGender("Kvinde")
 
-//////// Avg kvotient m. uddannelse ////////
+
+// Avg kvotient m. uddannelse
 function getQuotaEducation(education) {
     const pipeline = [
         {
@@ -303,7 +398,7 @@ function getQuotaEducation(education) {
 //getQuotaEducation("PB i IT-arkitektur")
 
 
-//////// Avg kvotient for alle uddannelser ////////
+// Avg kvotient for alle uddannelser
 function getAllEducationQuota() {
     const pipeline = [
         {
@@ -325,11 +420,10 @@ function getAllEducationQuota() {
     console.log(result);
     return result;
 }
-
 //getAllEducationQuota();
 
 
-//////// Avg kvotient m. køn og uddannelse ////////
+// Avg kvotient m. køn og uddannelse
 function getQuotaEducationGender(gender, education) {
     const pipeline = [
         {
@@ -353,45 +447,37 @@ function getQuotaEducationGender(gender, education) {
 }
 //getQuotaEducationGender("Mand", "Bygningskonstruktør")
 
-//////// Avg kvotient m. køn og alle uddannelser ////////
+
+// Avg kvotient m. køn og alle uddannelser
 function getAllQuotaGenderEducation(){
     const pipeline = [
-        // 1️⃣ Group by both gender and education
         {
             $group: {
-                _id: {
-                    education: "$INSTITUTIONSAKT_BETEGNELSE",
-                    gender: "$Køn"
-                },
-                avgQuota: { $avg: { $toDouble: "$KVOTIENT" } }
-            }
-        },
-
-        // 2️⃣ Regroup by only education and restructure fields
-        {
-            $group: {
-                _id: "$_id.INSTITUTIONSAKT_BETEGNELSE",
+                _id: "$INSTITUTIONSAKT_BETEGNELSE",
+                // Calculate Male Average: If Gender is Mand, take KVOTIENT, else ignore (null)
                 AvgQuotaM: {
                     $avg: {
                         $cond: [
-                            { $eq: ["$_id.Køn", "Mand"] },
-                            "$avgQuota",
+                            { $eq: ["$Køn", "Mand"] },
+                            { $toDouble: "$KVOTIENT" },
                             null
                         ]
                     }
                 },
+                // Calculate Female Average: If Gender is Kvinde, take KVOTIENT, else ignore (null)
                 AvgQuotaF: {
                     $avg: {
                         $cond: [
-                            { $eq: ["$_id.Køn", "Kvinde"] },
-                            "$avgQuota",
+                            // Note: Ensure this matches your data (e.g., "Kvinde")
+                            { $eq: ["$Køn", "Kvinde"] },
+                            { $toDouble: "$KVOTIENT" },
                             null
                         ]
                     }
                 }
             }
         },
-        // 3️⃣ Optional: replace _id with education
+        // Optional: Formatting to match your desired output structure
         {
             $project: {
                 _id: 0,
@@ -402,7 +488,7 @@ function getAllQuotaGenderEducation(){
         }
     ];
 
-    const results = new mingo.Aggregator(pipeline).run(EKdataset);
+    const results = new mingo.Aggregator(pipeline).run(EKdataset);    
 
     // Round results nicely
     const formatted = results.map(item => ({
@@ -418,7 +504,7 @@ getAllQuotaGenderEducation()
 
 
 
-//////// Avg alder ////////
+// Avg alder 
 function getAvgAge() {
     const pipeline7 = [
         {
@@ -437,7 +523,8 @@ function getAvgAge() {
 }
 //getAvgAge()
 
-//////// Avg alder m. køn ////////
+
+// Avg alder m. køn 
 function getAvgAgeGender(gender){
     const pipeline8 = [
         {
@@ -460,7 +547,8 @@ function getAvgAgeGender(gender){
 }
 //getAvgAgeGender("Mand")
 
-//////// Avg alder m. uddannelse ////////
+
+// Avg alder m. uddannelse 
 function getAvgAgeEducation(education) {
     const pipeline9 = [
         {
@@ -481,7 +569,8 @@ function getAvgAgeEducation(education) {
 }
 //getAvgAgeEducation("PB i IT-arkitektur")
 
-//////// Avg alder m. køn og uddannelse ////////
+
+// Avg alder m. køn og uddannelse
 function getAvgAgeGenderEducation(gender, education){
     const pipeline10 = [
         {
