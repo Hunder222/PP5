@@ -1,3 +1,12 @@
+*{
+    outline-style: dotted;
+    outline-color: red;
+    outline-offset: -1px;
+}
+* {
+    box-sizing: border-box;
+}
+
 html,body {
     background:linear-gradient(to bottom,#ffcd03,#ffda44,#ffe787,#ffeb99,#ffefad) ;
     height: 100%;
@@ -44,4 +53,35 @@ color: black;
     margin-left: 78vw;
     margin-top: 2vh;
 }
+    .charts{
+display: grid;
+        place-content: center;
+        width: 55vw;
+background-color: honeydew;
+
+
+
+    }
+
+.charts > * {
+    grid-area: 1 / 1;
+    max-width: 100%;
+    display: flex;
+
+
+}
+.box2{
+    max-width: 100%;
+
+}
+#ageChart{
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+}
+canvas {
+    max-width: 100%;
+}
+
+
 
