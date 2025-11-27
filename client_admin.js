@@ -123,18 +123,43 @@ studieretningChart.update()
 function getCountFromDenmarkOrAbroad() {
     const pipeline = [
         {
-            $group: {
-                _id: {
-                    $cond: {
-                        if: {$eq: ["$Statsborgerskab", "Danmark"]},
-                        then: "Danmark",
-                        else: "Udlandet"
+            $facet: {
+                "Samlet_statsborgerskab": [
+                    {
+                        $group: {
+                            _id: {
+                                $cond: {
+                                    if: { $eq: ["$Statsborgerskab", "Danmark"] },
+                                    then: "Danmark",
+                                    else: "Udlandet"
+                                }
+                            },
+                            Total: { $sum: 1 }
+                        }
                     }
-                },
-                Total: {$sum: 1}
+                ],
+
+                "Udenlandsk_statsborgerskab": [
+                    {
+
+                        $match: {
+                            Statsborgerskab: { $ne: "Danmark" }
+                        }
+                    },
+                    {
+
+                        $group: {
+                            _id: "$Statsborgerskab",
+                            Total: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $sort: { Total: -1 }
+                    }
+                ]
             }
         }
-    ];
+    ]
 
     const queryResult = new mingo.Aggregator(pipeline).run(EKdataset);
 
