@@ -5,11 +5,66 @@ html,body {
     padding: 0;
 }
 
-/* "ydre" box --> chart container*/
-.container {
-    border: 2px solid black;
-    height: 700px;
-    width: 1200px;
-    padding: 10px;
-    margin: 20px;
+/*container til alle charts*/
+.container{
+    border:2px solid black;
+    height:700px;
+    width:96.5vw;
+    padding:5px;
+    margin:10px;
+    display:flex;
+    flex-direction: row;
+}
+
+/*Container til højresidet charts*/
+.højreCharts{
+    height:680px;
+    /*border:2px solid black;*/
+    width:455px;
+    margin:5px;
+    display: flex;
+    flex-direction: column;
+}
+
+/*Container til venstresidet charts*/
+.venstreCharts{
+    height:680px;
+    /*border:2px solid black;*/
+    width: 750px;
+    margin:5px;
+    display:flex;
+    flex-direction: column;
+}
+
+/*container til statsborgerskab*/
+.chart1{
+    border:2px solid black;
+    width:455px;
+    height:335px;
+    margin-bottom:5px;
+
+}
+
+/*container til heatmap */
+.chart2{
+    width: 455px;
+    height:335px;
+    border:2px solid black;
+    margin-top:5px;
+}
+
+/*Container til studieretninger før EK*/
+.chart3{
+    width:750px;
+    height:335px;
+    border:2px solid black;
+    margin-bottom:5px;
+}
+
+/*container til 1. prio vs 2-10 prio*/
+.chart4{
+    width: 750px;
+    height:335px;
+    border:2px solid black;
+    margin-top:5px;
 }
