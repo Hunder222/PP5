@@ -27,8 +27,12 @@ let citizenshipChart = new Chart(citizenshipChartElement, {
                 customLabels: [],
 
                 // Styling
-                borderColor: 'rgba(255, 41, 41, 1)',
-                backgroundColor: 'rgba(255, 99, 99, 0.69)',
+                borderColor: '#883232ac',
+
+                // Optional: Make the border a darker version of the background
+                backgroundColor: '#cf4545ff',
+
+                borderWidth: 1, // Added for cleaner separation
                 pointRadius: 5,
                 pointHoverRadius: 0,
                 order: 0,
@@ -55,10 +59,17 @@ let citizenshipChart = new Chart(citizenshipChartElement, {
                 label: 'Dansk og udland',
                 // Initialize as empty
                 data: [],
-                backgroundColor: 'rgba(104, 99, 255, 0.5)',
-                borderColor: 'rgba(99, 138, 255, 1)',
-                borderWidth: 1,
-                outlierColor: '#999999',
+
+                // color
+                backgroundColor: ['#ebebebff', '#858585ff'],
+
+                // Optional: Make the border a darker version of the background
+                borderColor: ['#565656ff', '#303030ff'],
+                // --- COLOR LOGIC END ---
+
+                borderWidth: 1, // Added for cleaner separation
+                pointRadius: 5,
+                pointHoverRadius: 0,
                 order: 10,
                 datalabels: { display: false }
             }
@@ -66,6 +77,13 @@ let citizenshipChart = new Chart(citizenshipChartElement, {
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+            padding: {
+                top: -15,    // Set this to 0 or even a negative number like -10 if needed
+                bottom: 30
+            }
+        },
         plugins: {
             title: { display: true, text: '' },
             tooltip: {
@@ -113,9 +131,41 @@ let studieretningChart = new Chart(educationChartElement, {
             {
                 label: 'Eksamenstype',
                 data: [54],
-                backgroundColor: '#36a2eb',
+                
+                backgroundColor: [
+                    '#a22733ff', // Color for STX
+                    '#5BA4CF', // Color for HF
+                    'white', // Color for Andet
+                    '#3648a4ff', // Color for HHX
+                    '#9966FF', // Color for EUD
+                    '#3e5888ff', // Color for HTX
+                    '#858585ff', // Color for Udenlandsk
+                    '#c4c3c3ff'  // Color for EUX
+                ],
             }
         ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            datalabels: {
+                color: 'white',
+                font: { weight: 'bold' },
+            },
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: { stacked: true },
+            y: {
+                stacked: true,
+                title: {
+                    display: true,
+                    text: "antal ansøgere"
+                }
+            }
+        }
     }
 });
 
@@ -133,12 +183,12 @@ let firstPriorityChart = new Chart(firstPriorityChartElement, {
             {
                 label: 'Første priotet',
                 data: [20,18,26],
-                backgroundColor: '#36a2eb',
+                backgroundColor: '#1a38a5',
             },
             {
                 label: 'ikke første priotet',
                 data: [10, 7, 13],
-                backgroundColor: '#ff6384',
+                backgroundColor: '#fc8840ff',
             }
         ]
     },
@@ -153,7 +203,11 @@ let firstPriorityChart = new Chart(firstPriorityChartElement, {
         scales: {
             x: { stacked: true },
             y: {
-                stacked: true
+                stacked: true,
+                title: {
+                    display: true,
+                    text: "antal ansøgere"
+                }
             }
         }
     }
@@ -170,7 +224,7 @@ let firstPriorityChart = new Chart(firstPriorityChartElement, {
 // 1. SETUP MAP & GLOBALS
 // ==========================================
 
-let map = L.map('heatMap').setView([56.2, 10.5], 6.4);
+let map = L.map('heatMap').setView([56.2, 11.5], 6.4);
 let currentGeoJsonLayer = null; // We store the active layer here
 let cachedGeoJsonData = null;   // We store the raw map data here so we don't fetch it twice
 
@@ -413,7 +467,7 @@ function getCountFromDenmarkOrAbroad() {
     };
 
     console.log(finalResult);
-    
+
     citizenshipChart.data.datasets[0].data = finalResult.Udenlandsk.counts
     citizenshipChart.data.datasets[0].customLabels = finalResult.Udenlandsk.names    
     
