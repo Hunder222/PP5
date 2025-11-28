@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
+
+<div class="admin-nav-bar">
+    <label for="sideVaelger">Vælg side: </label>
+    <select id="sideVaelger" onchange="if (this.value) window.location.href=this.value">
+        <option value="index.html">Åbent hus</option>
+        <option value="admin.html" selected>Administration</option>
+    </select>
+</div>
 <div id="chartContainer" class="container">
 
     <div class="højreCharts">
