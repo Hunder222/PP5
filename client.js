@@ -56,7 +56,8 @@ const queriedData = {
 Chart.register(ChartDataLabels)
 
 
-// gender chart
+
+// --- CHANGE 2: Remove "let" (use the variable created at the top) ---
 let genderChart = new Chart(genderChartElement, {
     type: 'bar',
     data: {
@@ -76,29 +77,53 @@ let genderChart = new Chart(genderChartElement, {
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
-            // 1. Clean up the Tooltip (the box when you hover)
             tooltip: {
                 callbacks: {
+                    // 1. ADD THIS: Show the FULL name in the tooltip title
+                    title: function (context) {
+                        return context[0].label;
+                    },
+                    // 2. Existing label callback for the percentage
                     label: function (context) {
-                        // Round to 1 decimal place for the tooltip
                         let value = context.raw;
                         return context.dataset.label + ": " + value.toFixed(1) + "%";
                     }
                 }
             },
-            // 2. Clean up the Labels (the text on the bar)
             datalabels: {
                 color: 'white',
-                font: {weight: 'bold'},
-                // Round to 1 decimal place, e.g., "33.3%"
+                font: { weight: 'bold' },
                 formatter: (value) => {
                     return value.toFixed(1) + '%';
                 }
+            },
+            legend: {
+                display: true,
+                onClick: Chart.defaults.plugins.legend.onClick
             }
         },
         scales: {
-            x: {stacked: true},
+            x: {
+                stacked: true,
+                // 3. ADD THIS SECTION to truncate the text
+                ticks: {
+                    autoSkip: false, // Try to show every label
+                    maxRotation: 45, // Keep text angled
+                    minRotation: 45,
+                    callback: function (value) {
+                        // Get the current label
+                        let label = this.getLabelForValue(value);
+
+                        // If it's longer than 15 characters, cut it and add "..."
+                        if (label.length > 15) {
+                            return label.substr(0, 15) + '...';
+                        }
+                        return label;
+                    }
+                }
+            },
             y: {
                 stacked: true,
                 min: 0,
@@ -162,6 +187,25 @@ let comboChart = new Chart(comboChartElement, {
     },
     options: {
         responsive: true,
+        scales: {
+            x: {
+                ticks: {
+                    autoSkip: false, // Force all labels to show
+                    maxRotation: 45, // Optional: Keep it angled, or set to 0 for horizontal
+                    minRotation: 45,
+                    callback: function (value) {
+                        // Get the actual label string
+                        let label = this.getLabelForValue(value);
+
+                        // IF label is longer than 15 characters, cut it
+                        if (label.length > 15) {
+                            return label.substr(0, 15) + '...';
+                        }
+                        return label;
+                    }
+                }
+            }
+        },
         plugins: {
             title: {
                 display: true,
@@ -173,6 +217,12 @@ let comboChart = new Chart(comboChartElement, {
                 // Optional: Hide the tooltip for the ghost line if you want
                 filter: function (tooltipItem) {
                     return tooltipItem.datasetIndex === 0;
+                },
+                callbacks: {
+                    title: function (context) {
+                        // Return the full label in the tooltip header
+                        return context[0].label;
+                    }
                 }
             },
             legend: {
@@ -192,7 +242,7 @@ let comboChart = new Chart(comboChartElement, {
 // 1. SETUP MAP & GLOBALS
 // ==========================================
 
-let map = L.map('leafletMapDK').setView([56.2, 10.5], 7);
+let map = L.map('leafletMapDK').setView([56.2, 10.5], 6.4);
 let currentGeoJsonLayer = null; // We store the active layer here
 let cachedGeoJsonData = null;   // We store the raw map data here so we don't fetch it twice
 
@@ -556,7 +606,7 @@ function showAgeCharts() {
 
     comboChart.update()
 }
-showAgeCharts()
+//showAgeCharts()
 
 
 function showQuotaCharts() {
@@ -568,7 +618,7 @@ function showQuotaCharts() {
 
     comboChart.update()
 }
-//showQuotaCharts()
+showQuotaCharts()
 
 
 

@@ -77,7 +77,7 @@ let citizenshipChart = new Chart(citizenshipChartElement, {
                             : null;
 
                         if (name) {
-                            return name + ': ' + value + '%'; // Added '%' symbol
+                            return name + ': ' + value + ''; // Added '%' symbol
                         } else {
                             return context.dataset.label + ': ' + value;
                         }

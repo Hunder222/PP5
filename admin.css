@@ -88,13 +88,13 @@ html,body {
 .chart1{
     /*border:2px solid black;*/
     width:40vw;
-    height:50vh;
+    height:41vh;
 }
 
 /*container til heatmap */
 .chart2{
     width: 40vw;
-    height: 55vh;
+    height: 50vh;
    /* border:2px solid black;*/
     margin-top: 1vh;
 }
@@ -102,7 +102,7 @@ html,body {
 /*Container til studieretninger før EK*/
 .chart3{
     width:58vw;
-    height:48vh;
+    height:45vh;
     /*border:2px solid black;*/
     margin-bottom:5px;
     justify-items: center;
@@ -112,7 +112,7 @@ html,body {
 /*container til 1. prio vs 2-10 prio*/
 .chart4{
     width: 58vw;
-    height:48vh;
+    height:45vh;
    /* border:2px solid black;*/
     margin-top:5px;
     justify-items: center;
@@ -128,3 +128,13 @@ html,body {
 #statsborgerskab {
     height: 100%;
 }
+
+
+#beggeknapepr {
+    display: none;
+}
+
+.menu {
+    display: none;
+}
+
