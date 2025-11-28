@@ -1,16 +1,22 @@
 // DOM
 const genderChartElement = document.querySelector("#genderChart")
 const comboChartElement = document.querySelector("#comboChart")
-const hej = document.querySelector("#kvotient")
-hej.addEventListener("click",()=>{
-  console.log("hej")
+const kvotient = document.querySelector("#kvotient")
+const AlderBtm = document.querySelector("#alder")
+AlderBtm.addEventListener("click",()=>{
+    showAgeCharts()
+})
+kvotient.addEventListener("click",()=>{
+    showQuotaCharts()
 
 })
 
 const uddannelseInput= document.querySelector("#uddannelse-input")
 uddannelseInput.addEventListener("input",()=>{
-    console.log(uddannelseInput.value)
+
+    getStatsForEducation(uddannelseInput.value)
 })
+
 
 console.log(EKdataset[0]);
 
@@ -522,7 +528,7 @@ function getStatsForEducation (uddannelse) {
 
     createMapFromDataset(results)
 }
-getStatsForEducation("Datamatiker")
+
 
 
 //////// END__QUERIES ////////
