@@ -9,6 +9,14 @@
 </head>
 <body>
 
+<div class="open-house-nav-bar">
+    <label for="sideVaelger">Vælg side: </label>
+    <select id="sideVaelger" onchange="if (this.value) window.location.href=this.value">
+        <option value="index.html" selected>Åbent hus</option>
+        <option value="index_admin.html">Administration</option>
+    </select>
+</div>
+
     <div>
         <input type="radio" id="kvotient" name="kvotient"  checked>
         <label for="kvotient">kvotient</label>

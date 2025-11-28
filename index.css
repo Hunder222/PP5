@@ -14,9 +14,52 @@ html,body {
     padding: 0;
 }
 
+.open-house-nav-bar{
+    padding: 2vh 4vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 3vh;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 0.5vh solid black;
+}
 
+.open-house-nav-bar label{
+    margin-right: 1.5vh;
+    margin-bottom: 0;
+    font-weight: 700;
+    color: #333;
+    font-size: 2vh;
+    text-transform: uppercase;
+    letter-spacing: 0.1vh;
+    line-height: 1;
+    position: relative;
+    top: 0.1vh;
+}
 
+.open-house-nav-bar select{
+    padding: 1.2vh 4vh 1.2vh 2vh;
+    font-size: 2vh;
+    border-radius: 3vh;
+    border: 0.2vh solid rgba(255,255,255,0.8);
+    background-color: #ffffff;
+    color: #333;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-weight: 600;
+    box-shadow: 0 0.4vh 0.6vh rgba(0,0,0,0.05);
+    margin: 0;
+}
 
+.open-house-nav-bar select:hover{
+    transform: translateY(-0.2vh);
+    box-shadow: 0 6px 1.2vh rgba(0,0,0,0.1);
+    border-color: #fff;
+}
 
 .box1{
     display: grid;
