@@ -13,41 +13,21 @@ const firstPriorityChartElement = document.querySelector("#førstePrioritet")
 
 let citizenshipChart = new Chart(citizenshipChartElement, {
     data: {
-        labels: [], // Keep global labels empty
+        labels: [],
         datasets: [
-            // --- DATASET 1: Foreigns (The Ghost Dataset) ---
+            // --- DATASET 1: Foreigns ---
             {
                 type: 'pie',
                 label: 'Fordeling af udland',
-
-                // 1. Initialize as empty
                 data: [],
-
-                // 2. Add a custom property to hold labels later
-                customLabels: [],
-
-                // Styling
+                customLabels: [], // Filled via JS later
                 borderColor: '#883232ac',
-
-                // Optional: Make the border a darker version of the background
                 backgroundColor: '#cf4545ff',
-
-                borderWidth: 1, // Added for cleaner separation
-                pointRadius: 5,
-                pointHoverRadius: 0,
+                borderWidth: 1,
                 order: 0,
-
                 datalabels: {
-                    display: false,
-                    align: 'top',
-                    anchor: 'center',
-                    offset: 0,
-                    color: 'red',
-                    font: { weight: 'bold' },
-
-                    // 3. The Logic: Read from the custom array inside this specific dataset
+                    display: false, // ... your existing settings
                     formatter: function (value, context) {
-                        // Access the 'customLabels' array we added to the dataset object
                         const label = context.dataset.customLabels[context.dataIndex];
                         return label ? label + '\n' + value + '%' : '';
                     }
@@ -57,17 +37,14 @@ let citizenshipChart = new Chart(citizenshipChartElement, {
             {
                 type: 'pie',
                 label: 'Dansk og udland',
-                // Initialize as empty
                 data: [],
 
-                // color
+                // 1. ADD THIS so the tooltip knows what to call the inner slices
+                customLabels: ['Danmark', 'Udland'],
+
                 backgroundColor: ['#ebebebff', '#858585ff'],
-
-                // Optional: Make the border a darker version of the background
                 borderColor: ['#565656ff', '#303030ff'],
-                // --- COLOR LOGIC END ---
-
-                borderWidth: 1, // Added for cleaner separation
+                borderWidth: 1,
                 pointRadius: 5,
                 pointHoverRadius: 0,
                 order: 10,
@@ -79,30 +56,28 @@ let citizenshipChart = new Chart(citizenshipChartElement, {
         responsive: true,
         maintainAspectRatio: false,
         layout: {
-            padding: {
-                top: -15,    // Set this to 0 or even a negative number like -10 if needed
-                bottom: 30
-            }
+            padding: { top: -15, bottom: 30 }
         },
         plugins: {
             title: { display: true, text: '' },
             tooltip: {
-                mode: 'index',
+                mode: 'nearest',
                 intersect: true,
-                filter: function (tooltipItem) { return tooltipItem.datasetIndex === 0; },
+
+                // 2. REMOVED the 'filter' function here
+                // (It used to be here blocking dataset 2)
+
                 callbacks: {
                     label: function (context) {
-                        // 1. Get the value
                         let value = context.parsed;
 
-                        // 2. Try to get the name from your custom array
+                        // This logic now works for BOTH datasets automatically
                         let name = context.dataset.customLabels
                             ? context.dataset.customLabels[context.dataIndex]
                             : null;
 
-                        // 3. Return the formatted string
                         if (name) {
-                            return name + ': ' + value;
+                            return name + ': ' + value + '%'; // Added '%' symbol
                         } else {
                             return context.dataset.label + ': ' + value;
                         }
@@ -126,7 +101,7 @@ citizenshipChart.update()
 let studieretningChart = new Chart(educationChartElement, {
     type: 'bar',
     data: {
-        labels: ["asfs"],
+        labels: [""],
         datasets: [
             {
                 label: 'Eksamenstype',
@@ -517,6 +492,7 @@ function getCountFieldOfStudy() {
     studieretningChart.data.labels = finalResult.names
     studieretningChart.data.datasets[0].data = finalResult.counts
 
+    studieretningChart.update()
 
 }
 

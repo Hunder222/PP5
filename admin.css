@@ -3,6 +3,8 @@ html,body {
     min-height: 100%;
     margin: 0;
     padding: 0;
+    overflow: hidden;
+        /* Hide scrollbars */
 }
 
 /*container til alle charts*/
@@ -18,9 +20,9 @@ html,body {
 
 /*Container til højresidet charts*/
 .højreCharts{
-    height:95vh;
+    height:98vh;
     /*border:2px solid black;*/
-    width:50vw;
+    width:45vw;
     margin:5px;
     display: flex;
     flex-direction: column;
@@ -28,7 +30,7 @@ html,body {
 
 /*Container til venstresidet charts*/
 .venstreCharts{
-    height:95vh;
+    height:98vh;
     /*border:2px solid black;*/
     width: 60vw;
     margin:5px;
@@ -40,30 +42,33 @@ html,body {
 .chart1{
     border:2px solid black;
     width:40vw;
-    height:40vh;
+    height:50vh;
 }
 
 /*container til heatmap */
 .chart2{
     width: 40vw;
-    height: 57vh;
+    height: 55vh;
     border:2px solid black;
+    margin-top: 1vh;
 }
 
 /*Container til studieretninger før EK*/
 .chart3{
-    width:55vw;
-    height:65vh;
+    width:58vw;
+    height:48vh;
     border:2px solid black;
     margin-bottom:5px;
+    justify-items: center;
 }
 
 /*container til 1. prio vs 2-10 prio*/
 .chart4{
-    width: 55vw;
-    height:30vh;
+    width: 58vw;
+    height:48vh;
     border:2px solid black;
     margin-top:5px;
+    justify-items: center;
 }
 
 #heatMap {
