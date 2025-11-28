@@ -340,15 +340,62 @@ createMapFromDataset(EKdataset)
 function getCountFromDenmarkOrAbroad() {
     const pipeline = [
         {
-            $group: {
-                _id: {
-                    $cond: {
-                        if: {$eq: ["$Statsborgerskab", "Danmark"]},
-                        then: "Danmark",
-                        else: "Udlandet"
+            $facet: {
+                // FACET 1: Summary (Denmark vs Abroad)
+                "Samlet_statsborgerskab": [
+                    {
+                        $group: {
+                            _id: {
+                                $cond: {
+                                    if: { $eq: ["$Statsborgerskab", "Danmark"] },
+                                    then: "Danmark",
+                                    else: "Udlandet"
+                                }
+                            },
+                            Total: { $sum: 1 }
+                        }
+                    },
+                    // -- New formatting stages --
+                    {
+                        $group: {
+                            _id: null,
+                            names: { $push: "$_id" },
+                            counts: { $push: "$Total" }
+                        }
+                    },
+                    {
+                        $project: { _id: 0, names: 1, counts: 1 }
                     }
-                },
-                Total: {$sum: 1}
+                ],
+
+                // FACET 2: Detailed (Specific Foreign Countries)
+                "Udenlandsk_statsborgerskab": [
+                    {
+                        $match: {
+                            Statsborgerskab: { $ne: "Danmark" }
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: "$Statsborgerskab",
+                            Total: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $sort: { Total: -1 }
+                    },
+                    // -- New formatting stages --
+                    {
+                        $group: {
+                            _id: null,
+                            names: { $push: "$_id" },
+                            counts: { $push: "$Total" }
+                        }
+                    },
+                    {
+                        $project: { _id: 0, names: 1, counts: 1 }
+                    }
+                ]
             }
         }
     ];
@@ -366,16 +413,13 @@ function getCountFromDenmarkOrAbroad() {
     };
 
     console.log(finalResult);
-
-
-
+    
     citizenshipChart.data.datasets[0].data = finalResult.Udenlandsk.counts
     citizenshipChart.data.datasets[0].customLabels = finalResult.Udenlandsk.names    
-
+    
     citizenshipChart.data.datasets[1].data = finalResult.Samlet.counts
-
+    
     citizenshipChart.update();
-
 }
 
 getCountFromDenmarkOrAbroad()
