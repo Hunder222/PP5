@@ -13,8 +13,11 @@ kvotient.addEventListener("click",()=>{
 
 const uddannelseInput= document.querySelector("#uddannelse-input")
 uddannelseInput.addEventListener("input",()=>{
-
-    getStatsForEducation(uddannelseInput.value)
+    if (uddannelseInput.value === "Alle uddannelser") {
+        createMapFromDataset(EKdataset)
+    } else {
+        getStatsForEducation(uddannelseInput.value)
+    }
 })
 
 
@@ -163,8 +166,9 @@ let comboChart = new Chart(comboChartElement, {
                 data: [], // Use the averages array directly here
 
                 // Make the actual graph invisible
-                borderColor: 'red',
+                borderColor: '#d10a0aff',
                 backgroundColor: 'transparent',
+                borderWidth: 1,
                 pointRadius: 5,
                 pointHoverRadius: 0,
 
@@ -177,7 +181,7 @@ let comboChart = new Chart(comboChartElement, {
                     anchor: 'center', // Lock anchor to the exact data point (the average)
                     offset: 0,       // Space between the invisible point (center of red dot) and text
 
-                    color: 'red',
+                    color: '#ff3434ff',
                     font: {
                         weight: 'bold'
                     }
